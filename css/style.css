@@ -1,0 +1,17 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700');
+.drop {
+    top: 65px;
+    left: 60px;
+    width: 400px;
+    height: 400px;
+    position: absolute;
+    z-index: -5;
+    background-color: #831973;
+    border-radius: 50%;
+    filter: blur(15px);
+}
+
+svg {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 400;
+}
