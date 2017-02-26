@@ -16,12 +16,12 @@ function setup() {
     .attr('height', svg_height)
     .attr('id', 'main-svg')
 
-  //Circular Noise
+  //Circular Noises
   cNoise = new CircularNoise(0.2);
   cNoiseNuclei = new CircularNoise(0.1);
 
 
-  //Initialization
+  //Component Initialization
   cell_membrane = new Blob(svg, 2, 200, 200, 5, 10, centerx, centery, cNoise, '#831973', 'cell_stroke', 'Cell Membrane');
   cytoplasm = new Blob(svg, 2, 190, 190, 5, 10, centerx, centery, cNoise, '#331a50', 'cell', 'Cytoplasm');
 

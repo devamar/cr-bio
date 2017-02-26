@@ -1,3 +1,18 @@
+/**
+ * Creates an SVG componenet which displaces similar to a 'blob' of liquid.
+ * @param {D3Object} container - SVG Container of the blob.
+ * @param {int} power - The exponent n in: (x-dx)^n + (y-dy)^n = r^n.
+ * @param {int} width - Base width of the blob.
+ * @param {int} height - Base height of the blob.
+ * @param {int} variance - Variance in base width and base height of the blob.
+ * @param {int} frequency - Frequency of the displacement of the blob.
+ * @param {int} dx - Horizontal displacement from position (0,0) of the blob.
+ * @param {int} dy - Vertical displacement from position (0,0) of the blob.
+ * @param {CircularNoise} noise - Noise used to displace the blob.
+ * @param {String} fill - Fill of the blob, ie. '#c0392b' (Hex Recommended).
+ * @param {String} id - HTML id of the blob, ie. 'cell_membrane'.
+ * @param {String} name - Name of the blob, ie. 'Cell Membrane'
+ */
 class Blob {
     constructor(container, power, width, height, variance, frequency, dx, dy, noise, fill, id, name) {
         this.component = container.append('path')
@@ -5,7 +20,7 @@ class Blob {
             .attr('id', id)
             .style('cursor', 'pointer');
         this.power = power;
-        var rng = Math.random()*variance;
+        var rng = Math.random() * variance;
         this.width = width + rng;
         this.height = height + rng;
         this.frequency = frequency;

@@ -1,6 +1,20 @@
+/**
+ * Creates a set of Ribosome Objects based on the given parameters.
+ * @param {D3Object} container - SVG Container of the Ribosome Objects.
+ * @param {int} r - Base radius of the Ribosome.
+ * @param {int} r_var - Amount of variation in base radius for each Ribsome.
+ * @param {int} amount - Number of total Ribsomes.
+ * @param {int} dx - Horizontal displacement from position (0,0) of the Ribosomes.
+ * @param {int} dy - Vertical displacement from position (0,0) of the Ribosomes.
+ * @param {int} dxvar - Variation allowed in the horizontal position for each Ribosome.
+ * @param {int} dyvar - Variation allowed in the vertical position for each Ribosome.
+ * @param {String} fill - Fill of the Ribosomes, ie. '#c0392b' (Hex Recommended).
+ * @param {String} class_name - HTML class of the Ribosomes, ie. 'ribosomes'.
+ * @param {String} name - Name of the blob, ie. 'Ribosomes'
+ */
 class Ribosomes {
     constructor(container, r, r_var, amount, dx, dy, dxvar, dyvar, fill, class_name, name) {
-        this.data = [] //this.data = [RibsomeA, RibsomeB, RibsomeC]
+        this.data = [] //this.data = [RibsomeA, RibsomeB, RibsomeC ...]
         this.noise = new CircularNoise(0.5);
         while (this.data.length < amount) {
             var new_dx = Math.random() * dxvar + dx
@@ -24,7 +38,16 @@ class Ribosomes {
         }
     }
 }
-
+/**
+ * Creates an SVG circle with the given properties.
+ * @param {D3Object} container - SVG Container of the Ribosome.
+ * @param {int} r - Radius of the Ribosome.
+ * @param {int} dx - Horizontal displacement from position (0,0) of the Ribosome.
+ * @param {int} dy - Vertical displacement from position (0,0) of the Ribosome.
+ * @param {String} fill - Fill of the Ribosome, ie. '#c0392b' (Hex Recommended).
+ * @param {String} id - HTML id of the Ribosome, ie. 'ribosome_a'.
+ * @param {String} name - Name of the Ribosome, ie. 'Ribosomes'
+ */
 class Ribosome {
     constructor(container, r, dx, dy, fill, id, name) {
         this.component = container.append('circle')
