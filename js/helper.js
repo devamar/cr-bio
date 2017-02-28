@@ -81,6 +81,19 @@ function draw_cell(width, height, na, freq, noise, dx, dy) {
     return s;
 }
 
+function draw_line(x1, y1, length) {
+    var s = ''
+    for (var x = x1; x <= x1 + 2 * length; x += 0.1) {
+        //var noise_a = 10*noise(0.1*(0.1*frameCount + x))
+        noise_a = sin(0.1 * frameCount + 0.1 * x)
+        if (s == '')
+            s += 'M' + (x + noise_a) + ' ' + (y1 + noise_a)
+        else
+            s += 'L' + (x + noise_a) + ' ' + (y1 + noise_a)
+    }
+    return s;
+}
+
 function arc_to(start_theta, end_theta, radius, dx, dy) {
     s = ''
     increment = 0.1
@@ -91,13 +104,12 @@ function arc_to(start_theta, end_theta, radius, dx, dy) {
             var y = radius * sin(theta) + dy
             s += 'L' + x + ' ' + y;
         }
-    }
-    else {
-      for (var theta = start_theta; theta >= end_theta; theta -= increment) {
-          var x = radius * cos(theta) + dx
-          var y = radius * sin(theta) + dy
-          s += 'L' + x + ' ' + y;
-      }
+    } else {
+        for (var theta = start_theta; theta >= end_theta; theta -= increment) {
+            var x = radius * cos(theta) + dx
+            var y = radius * sin(theta) + dy
+            s += 'L' + x + ' ' + y;
+        }
     }
     return s
 }
@@ -113,13 +125,12 @@ function arc_to_s(start_theta, end_theta, radius, dx, dy) {
             var y = radius * sin(theta) + dy
             s += 'L' + x + ' ' + y;
         }
-    }
-    else {
-      for (var theta = start_theta; theta >= end_theta; theta -= increment) {
-          var x = radius * cos(theta) + dx
-          var y = radius * sin(theta) + dy
-          s += 'L' + x + ' ' + y;
-      }
+    } else {
+        for (var theta = start_theta; theta >= end_theta; theta -= increment) {
+            var x = radius * cos(theta) + dx
+            var y = radius * sin(theta) + dy
+            s += 'L' + x + ' ' + y;
+        }
     }
     return s
 }

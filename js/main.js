@@ -21,6 +21,9 @@ function setup() {
   cNoiseNuclei = new CircularNoise(0.1);
 
 
+  //CSS Dropshadow
+
+
   //Component Initialization
   cell_membrane = new Blob(svg, 2, 200, 200, 5, 10, centerx, centery, cNoise, '#831973', 'cell_stroke', 'Cell Membrane');
   cytoplasm = new Blob(svg, 2, 190, 190, 5, 10, centerx, centery, cNoise, '#331a50', 'cell', 'Cytoplasm');
@@ -32,7 +35,7 @@ function setup() {
 
   ribosomes = new Ribosomes(svg, 1, 3, 5, centerx + 50, centery + 90, 30, 30, '#9e71d2', 'ribo', 'Ribosomes');
 
-  //smooth_er = new ER(svg, .8, 2, 3, 7, 2, 4, nuclear_membrane, 10, '#fff', 'smooth_er', 'Smooth ER')
+  lysosome = new Lysosome(svg, 15, 3, 160, 340, '#cb58bf', '#7f377b', 'lysosome', 'Lysosome')
 }
 
 function draw() {
@@ -42,4 +45,5 @@ function draw() {
   nucleus.draw();
   nuclei.draw();
   ribosomes.draw();
+  lysosome.draw();
 }

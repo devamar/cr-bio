@@ -28,7 +28,7 @@ class Ribosomes {
                 }
             }
             if (no_overlap) {
-                this.data.push(new Ribosome(container, new_rad, new_dx, new_dy, fill, class_name + this.data.length, name))
+                this.data.push(new Ribosome(container, new_rad, new_dx, new_dy, fill, class_name, class_name + this.data.length, name))
             }
         }
     }
@@ -49,21 +49,22 @@ class Ribosomes {
  * @param {String} name - Name of the Ribosome, ie. 'Ribosomes'
  */
 class Ribosome {
-    constructor(container, r, dx, dy, fill, id, name) {
+    constructor(container, r, dx, dy, fill, class_name, id, name) {
         this.component = container.append('circle')
             .attr('fill', fill)
             .attr('cx', dx)
             .attr('cy', dy)
             .attr('r', r)
+            .attr('class', class_name)
             .attr('id', id)
             .style('cursor', 'pointer')
         this.r = r;
+        this.id = id;
         this.dx = dx;
         this.dy = dy;
-        this.id = id;
         this.fill = fill;
         this.name = name;
-
+        this.class_name = class_name
         var ribo = this;
         $('#' + id).mouseover(function(e) {
                 ribo.focus(e);
@@ -92,7 +93,7 @@ class Ribosome {
 
         for (var i = 0; i < global_comp.length; i++) {
             global_comp[i].component.style('transition', '1s');
-            if (global_comp[i] instanceof Ribosome) {
+            if (global_comp[i].component.attr('class') == this.class_name) {
                 global_comp[i].shadeColor(-0.5)
             } else {
                 global_comp[i].shadeColor(0.5)
