@@ -1,6 +1,6 @@
-function toolTip(container, initial, final, extension, name) {
-    container.selectAll(".tool-tip").remove();
-    container.selectAll(".tool-tip-text").remove();
+function toolTip(container, initial, final, name) {
+    container.selectAll("#tool-tip-line").remove();
+    container.selectAll("#tool-tip-text").remove();
     var d = 40;
     var beta = Math.atan(abs((initial[1] - final[1]) / (initial[0] - final[0])));
     var mx = (final[0] - initial[0]);
@@ -9,23 +9,41 @@ function toolTip(container, initial, final, extension, name) {
         if (my <= 0) {
             var nx = final[0] + d * cos(beta);
             var ny = final[1] - d * sin(beta);
-            var ext = extension
+            var ext = 1
         } else {
             var nx = final[0] + d * cos(beta);
             var ny = final[1] + d * sin(beta);
-            var ext = extension
+            var ext = 1
         }
     } else {
         if (my <= 0) {
             var nx = final[0] - d * cos(beta);
             var ny = final[1] - d * sin(beta);
-            var ext = -extension
+            var ext = -1
         } else {
             var nx = final[0] - d * cos(beta);
             var ny = final[1] + d * sin(beta);
-            var ext = -extension
+            var ext = -1
         }
     }
+
+    var text = container.append('text')
+        .attr('id', 'tool-tip-text')
+        .text(name)
+        .attr('x', nx)
+        .attr('y', ny - 10)
+        .attr('fill', 'rgba(0,0,0,0)')
+
+    if (mx < 0) {
+      text.attr('text-anchor', 'end');
+    }
+
+    text.transition()
+        .duration(750)
+        .attr('fill', 'rgba(0,0,0,1)')
+
+    var el = document.getElementById('tool-tip-text');
+    ext = ext * el.getComputedTextLength();
 
     var total_d = d + abs(ext)
 
@@ -33,7 +51,7 @@ function toolTip(container, initial, final, extension, name) {
         .attr('d', 'M' + final[0] + ' ' + final[1] + 'L' + nx + ' ' + ny + ' ' + 'L' + (nx + ext) + ' ' + ny)
         .attr('stroke-dasharray', total_d + ' ' + total_d)
         .attr('stroke-dashoffset', total_d)
-        .attr('class', 'tool-tip')
+        .attr('id', 'tool-tip-line')
         .style('stroke', 'rgba(0,0,0,1)')
         .style('fill', 'none')
         .style('stroke-width', 1)
@@ -42,26 +60,18 @@ function toolTip(container, initial, final, extension, name) {
     line.transition()
         .duration(750)
         .attr('stroke-dashoffset', '0')
-
-    var text = container.append('text')
-        .attr('class', 'tool-tip-text')
-        .text(name)
-        .attr('x', nx)
-        .attr('y', ny - 10)
-        .attr('fill', 'rgba(0,0,0,0)')
-
-    text.transition()
-        .duration(750)
-        .attr('fill', 'rgba(0,0,0,1)')
 }
 
-function toolTipRemove(container, extension) {
+function toolTipRemove(container) {
+    var el = document.getElementById('tool-tip-text');
+    var ext = el.getComputedTextLength();
     var d = 40;
-    var total_d = d + abs(extension);
-    container.selectAll(".tool-tip").transition()
+    var total_d = d + ext;
+    console.log(total_d)
+    container.selectAll("#tool-tip-line").transition()
         .duration(250)
         .attr('stroke-dashoffset', total_d)
-    container.selectAll(".tool-tip-text").transition()
+    container.selectAll("#tool-tip-text").transition()
         .duration(250)
         .attr('fill', 'rgba(0,0,0,0)')
 }

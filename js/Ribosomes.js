@@ -89,7 +89,7 @@ class Ribosome {
     }
     focus(e) {
         var svg = d3.select('#main-svg');
-        toolTip(svg, [this.dx, this.dy], [e.pageX, e.pageY], this.name.length * 9, this.name)
+        toolTip(svg, [this.dx, this.dy], [e.pageX, e.pageY], this.name)
 
         for (var i = 0; i < global_comp.length; i++) {
             global_comp[i].component.style('transition', '1s');
@@ -102,7 +102,7 @@ class Ribosome {
     }
     unFocus() {
         var svg = d3.select('#main-svg');
-        toolTipRemove(svg, this.name.length * 9)
+        toolTipRemove(svg)
 
         for (var i = 0; i < global_comp.length; i++) {
             global_comp[i].component.style('transition', '0s');
