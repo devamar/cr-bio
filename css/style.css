@@ -1,4 +1,10 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700');
+
+body, html {
+  margin: 0px;
+  background-color: #f5f5f5;
+}
+
 .drop {
     top: 65px;
     left: 60px;

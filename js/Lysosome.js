@@ -14,10 +14,11 @@
  * @param {String} name - Name of the blob, ie. 'Cell Membrane'
  */
 class Lysosome {
-    constructor(container, r, num_debree, dx, dy, fill, fill_debree, id, name) {
+    constructor(container, r, num_debree, dx, dy, fill, fill_membrane, fill_debree, id, name) {
         this.debree = []
         var blob_cnoise = new CircularNoise(0.001)
-        this.blob = new Blob(container, 2, r, r, r / 5, 2, dx + r, dy + r, blob_cnoise, fill, id, name)
+        this.blob = new Blob(container, 2, r*1.2, r*1.2, r / 5, 2, dx + r, dy + r, blob_cnoise, fill_membrane, id + '_membrane', name + ' Membrane')
+        this.membrane = new Blob(container, 2, r, r, r / 5, 2, dx + r, dy + r, blob_cnoise, fill, id, name)
         var attempts = 0;
         while ((this.debree.length <= num_debree) && (attempts < 500)) {
           attempts += 1;
@@ -57,6 +58,7 @@ class Lysosome {
     }
     draw() {
         this.blob.draw()
+        this.membrane.draw()
         for (var j = 0; j < this.debree.length; j++) {
             this.debree[j].translate(map(this.debree_noise.getNoise(frameCount * .01 * j), 0, 1, -5, 5), map(this.debree_noise.getNoise(frameCount * .01 * (this.debree.length - j)), 0, 1, -5, 5));
         }

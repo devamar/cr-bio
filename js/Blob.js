@@ -14,11 +14,7 @@
  * @param {String} name - Name of the blob, ie. 'Cell Membrane'
  */
 class Blob {
-    constructor(container, power, width, height, variance, frequency, dx, dy, noise, fill, id, name) {
-        this.component = container.append('path')
-            .attr('fill', fill)
-            .attr('id', id)
-            .style('cursor', 'pointer');
+    constructor(container, power, width, height, variance, frequency, dx, dy, noise, fill, id, name, dropshadow = false) {
         this.power = power;
         var rng = Math.random() * variance;
         this.width = width + rng;
@@ -32,6 +28,19 @@ class Blob {
         this.container = container;
         this.fill = fill;
         this.name = name;
+
+        if (dropshadow) {
+            this.drop_shadow = container.append('path')
+                .attr('fill', fill)
+                .attr('id', id + '_dropshadow')
+                .attr('d', draw_cell(this.width, this.height, 2 / power, frequency, noise, dx + 2, dy + 2))
+                .attr('filter', 'url(#blur)')
+                .style('cursor', 'pointer');
+        }
+        this.component = container.append('path')
+            .attr('fill', fill)
+            .attr('id', id)
+            .style('cursor', 'pointer');
 
         var blob = this;
         $('#' + id).mouseover(function(e) {
@@ -72,4 +81,5 @@ class Blob {
                 global_comp[i].revertColor()
         }
     }
+    addDropShadow() {}
 }
