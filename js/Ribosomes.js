@@ -19,7 +19,7 @@ class Ribosomes {
         while (this.data.length < amount) {
             var new_dx = Math.random() * dxvar + dx
             var new_dy = Math.random() * dyvar + dy
-            var new_rad = Math.random() * (r_var) + r
+            var new_rad = map(Math.random(), 0, 1, -r_var, r_var) + r
             var no_overlap = true
             for (var i = 0; i < this.data.length; i++) {
                 var d = Math.pow(this.data[i].dx - new_dx, 2) + Math.pow(this.data[i].dy - new_dy, 2)
@@ -87,13 +87,16 @@ class Ribosome {
     revertColor() {
         this.component.attr('fill', this.fill)
     }
+    setTransition(amount) {
+      this.component.style('transition', amount + 's')
+    }
     focus(e) {
         var svg = d3.select('#main-svg');
         toolTip(svg, [this.dx, this.dy], [e.pageX, e.pageY], this.name)
 
         for (var i = 0; i < global_comp.length; i++) {
-            global_comp[i].component.style('transition', '1s');
-            if (global_comp[i].component.attr('class') == this.class_name) {
+            global_comp[i].setTransition(1)
+            if (global_comp[i].component && global_comp[i].component.attr('class') == this.class_name) {
                 global_comp[i].shadeColor(-0.5)
             } else {
                 global_comp[i].shadeColor(0.5)
@@ -105,7 +108,7 @@ class Ribosome {
         toolTipRemove(svg)
 
         for (var i = 0; i < global_comp.length; i++) {
-            global_comp[i].component.style('transition', '0s');
+            global_comp[i].setTransition(0)
             global_comp[i].revertColor()
         }
     }

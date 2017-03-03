@@ -37,12 +37,14 @@ class Blob {
                 .attr('filter', 'url(#blur)')
                 .style('cursor', 'pointer');
         }
+        
         this.component = container.append('path')
             .attr('fill', fill)
             .attr('id', id)
             .style('cursor', 'pointer');
 
         var blob = this;
+
         $('#' + id).mouseover(function(e) {
                 blob.focus(e);
             })
@@ -61,12 +63,15 @@ class Blob {
     revertColor() {
         this.component.attr('fill', this.fill)
     }
+    setTransition(amount) {
+      this.component.style('transition', amount + 's')
+    }
     focus(e) {
         var svg = d3.select('#main-svg');
         toolTip(svg, [this.dx, this.dy], [e.pageX, e.pageY], this.name)
 
         for (var i = 0; i < global_comp.length; i++) {
-            global_comp[i].component.style('transition', '1s');
+            global_comp[i].setTransition(1)
             if (global_comp[i] != this)
                 global_comp[i].shadeColor(0.5)
         }
@@ -76,7 +81,7 @@ class Blob {
         toolTipRemove(svg)
 
         for (var i = 0; i < global_comp.length; i++) {
-            global_comp[i].component.style('transition', '0s');
+            global_comp[i].setTransition(0)
             if (global_comp[i] != this)
                 global_comp[i].revertColor()
         }
