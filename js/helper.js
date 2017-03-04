@@ -35,7 +35,7 @@ function toolTip(container, initial, final, name) {
         .attr('fill', 'rgba(0,0,0,0)')
 
     if (mx < 0) {
-      text.attr('text-anchor', 'end');
+        text.attr('text-anchor', 'end');
     }
 
     text.transition()
@@ -91,6 +91,70 @@ function draw_cell(width, height, na, freq, noise, dx, dy) {
     return s;
 }
 
+function arc_to(start_theta, end_theta, radius, dx, dy, cnoise) {
+    s = ''
+    increment = 0.1
+    if (start_theta <= end_theta) {
+        for (var theta = start_theta; theta <= end_theta; theta += increment) {
+            //var radius_noise = 0.5 * (theta - start_theta) * map(cnoise.getNoise(theta, frameCount * .02 + 0.1 * random(4)), 0, 1, -7, 7);
+            var radius_noise = 0;
+            var x = (radius + radius_noise) * cos(theta) + dx
+            var y = (radius + radius_noise) * sin(theta) + dy
+            s += 'L' + x + ' ' + y;
+        }
+    } else {
+        for (var theta = start_theta; theta >= end_theta; theta -= increment) {
+            //var radius_noise = 0.5 * (theta - start_theta) * map(cnoise.getNoise(theta, frameCount * .02 + 0.1 * random(4)), 0, 1, -7, 7);
+            var radius_noise = 0;
+            var x = (radius + radius_noise) * cos(theta) + dx
+            var y = (radius + radius_noise) * sin(theta) + dy
+            s += 'L' + x + ' ' + y;
+        }
+    }
+    return s
+}
+
+function alt_arc_to(x1, y1, x2, y2, dx, dy, offset) {
+
+    var s = ''
+    var radius = sqrt(sq(x1 - x2) + sq(y1 - y2))
+    var cx = (x1 + x2) / 2;
+    var cy = (y1 + y2) / 2;
+    var increment = 0.2;
+    for (var theta = 0; theta <= 2 * Math.PI; theta += increment) {
+        //var radius_noise = 0.5 * (theta - start_theta) * map(cnoise.getNoise(theta, frameCount * .02 + 0.1 * random(4)), 0, 1, -7, 7);
+        var radius_noise = 0;
+        var x = (radius / 2 + radius_noise) * cos(theta) + cx
+        var y = (radius / 2 + radius_noise) * sin(theta) + cy
+        s += 'L' + x + ' ' + y;
+    }
+    /*
+    var increment = 0.3
+    var cx = (x1 + x2) / 2;
+    var cy = (y1 + y2) / 2;
+    var radius = sqrt(sq(x1 - x2) + sq(y1 - y2)) / 2
+    var angle_between = atan(abs(y1 - y2) / abs(x1 - x2))
+    if ((x1 - x2 >= 0 && y1 - y2 >= 0) || (x1 - x2 <= 0 && y1 - y2 <= 0)) {
+        for (var theta = Math.PI; theta < 2 * Math.PI; theta += increment) {
+            //var radius_noise = map(noise.getNoise(theta, frameCount * .02), 0, 1, -freq, freq);
+            var radius_noise = 0;
+            var x = (radius + radius_noise) * cos(theta - angle_between + offset) + cx
+            var y = (radius + radius_noise) * sin(theta - angle_between + offset) + cy
+            s += 'L' + x + ' ' + y;
+        }
+    } else {
+        for (var theta = Math.PI; theta < 2 * Math.PI; theta += increment) {
+            //var radius_noise = map(noise.getNoise(theta, frameCount * .02), 0, 1, -freq, freq);
+            var radius_noise = 0;
+            var x = (radius + radius_noise) * cos(theta - angle_between + offset) + cx
+            var y = (radius + radius_noise) * sin(theta - angle_between + offset) + cy
+            s += 'L' + x + ' ' + y;
+        }
+    }
+    */
+    return s
+}
+
 function draw_line(x1, y1, length) {
     var s = ''
     for (var x = x1; x <= x1 + 2 * length; x += 0.1) {
@@ -103,48 +167,6 @@ function draw_line(x1, y1, length) {
     }
     return s;
 }
-
-function arc_to(start_theta, end_theta, radius, dx, dy) {
-    s = ''
-    increment = 0.1
-
-    if (start_theta <= end_theta) {
-        for (var theta = start_theta; theta <= end_theta; theta += increment) {
-            var x = radius * cos(theta) + dx
-            var y = radius * sin(theta) + dy
-            s += 'L' + x + ' ' + y;
-        }
-    } else {
-        for (var theta = start_theta; theta >= end_theta; theta -= increment) {
-            var x = radius * cos(theta) + dx
-            var y = radius * sin(theta) + dy
-            s += 'L' + x + ' ' + y;
-        }
-    }
-    return s
-}
-
-function arc_to_s(start_theta, end_theta, radius, dx, dy) {
-    s = ''
-    increment = 0.1
-
-    end_theta = -end_theta
-    if (start_theta <= end_theta) {
-        for (var theta = start_theta; theta <= end_theta; theta += increment) {
-            var x = radius * cos(theta) + dx
-            var y = radius * sin(theta) + dy
-            s += 'L' + x + ' ' + y;
-        }
-    } else {
-        for (var theta = start_theta; theta >= end_theta; theta -= increment) {
-            var x = radius * cos(theta) + dx
-            var y = radius * sin(theta) + dy
-            s += 'L' + x + ' ' + y;
-        }
-    }
-    return s
-}
-
 
 function CircularNoise(scale) {
 

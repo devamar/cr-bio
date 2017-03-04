@@ -1,120 +1,219 @@
 class ER {
-    constructor(container, min_length, max_length, min_width, max_width, min_iterations, max_iterations, surround, padding, fill, id, name) {
-        this.data = [] // this.data = [{x: 0, y: 0}, {x: 1, y: 0} ...]
-        //First Iteration
-        this.length = Math.random() * ((max_length - min_length) / 2) + min_length / 2;
-        this.width = Math.random() * (max_width - min_width) + min_width;
-        this.branch_width = Math.random() * (max_width - min_width) + min_width;
+    constructor(container, length, width, branch_width, iterations, start_angle, surround, padding, fill, id, name) {
+        this.length = length;
+        this.width = width;
+        this.branch_width = branch_width;
         this.r = surround.width + padding;
         this.dx = surround.dx;
-        this.dy = surround.dy
+        this.dy = surround.dy;
+        this.cnoise = new CircularNoise(0.2);
         this.component = container.append('path')
-            .attr('fill', 'none')
-            .attr('stroke-width', '1px')
-            .attr('stroke', fill)
+            .attr('fill', fill)
+            .attr('stroke', 'none')
             .attr('d', '')
             .attr('id', id)
             .style('cursor', 'pointer');
-        var start_theta = Math.random() * (2 * Math.PI - min_width) + min_width;
-        var theta_delta_a = Math.random() * (this.length);
-        var theta_delta_b = Math.random() * (this.length);
-        var theta_delta_c = Math.random() * (this.length);
-        var theta_delta_d = Math.random() * (this.length);
-        var theta_delta_e = Math.random() * Math.PI / 2
-        var theta_delta_f = Math.random() * Math.PI / 2
-        var theta_delta_g = Math.random() * Math.PI / 2
-        var s = ''
-        var current_theta = start_theta
+        this.start_theta = start_angle;
+        this.theta_delta_a = Math.random() * (this.length/2) + this.length/2;
+        this.theta_delta_b = Math.random() * (this.length/2) + this.length/2;
+        this.theta_delta_c = Math.random() * (this.length/2) + this.length/2;
+        this.theta_delta_d = Math.random() * (this.length/2) + this.length/2;
+        this.theta_delta_e = Math.random() * Math.PI / 8 + Math.PI/16
+        this.theta_delta_f = Math.random() * Math.PI / 5 + Math.PI/8
+        this.theta_delta_g = Math.random() * Math.PI / 5 + Math.PI/8
+        this.transrng = random(5)
+        this.name = name;
+        this.id = id;
+        this.fill = fill;
 
-        //A
-        s += 'M' + parseInt((this.r + 5 * this.width) * cos(current_theta) + this.dx) + ' ' + parseInt((this.r + 5 * this.width) * sin(current_theta) + this.dy)
+        var er = this;
 
-        //B
-        s += 'L' + parseInt((this.r + 4 * this.width) * cos(current_theta) + this.dx) + ' ' + parseInt((this.r + 4 * this.width) * sin(current_theta) + this.dy)
+        $('#' + id).mouseover(function(e) {
+                er.focus(e);
+            })
+            .mouseout(function(e) {
+                er.unFocus(e);
+            });
 
-        //C
-        s += arc_to(current_theta, current_theta - theta_delta_a, this.r + 4 * this.width, this.dx, this.dy)
-        current_theta = current_theta - theta_delta_a
-        s += 'L' + parseInt((this.r + 4 * this.width) * cos(current_theta) + this.dx) + ' ' + parseInt((this.r + 4 * this.width) * sin(current_theta) + this.dy)
+        global_comp.push(this)
+    }
+    shadeColor(amount) {
+        this.component.attr('fill', shadeHexColor(this.fill, amount))
+    }
+    revertColor() {
+        this.component.attr('fill', this.fill)
+    }
+    setTransition(amount) {
+      this.component.style('transition', amount + 's')
+    }
+    focus(e) {
+        var svg = d3.select('#main-svg');
+        toolTip(svg, [this.dx, this.dy], [e.pageX, e.pageY], this.name)
 
-        //D
-        s += 'L' + parseInt((this.r + 3 * this.width) * cos(current_theta) + this.dx) + ' ' + parseInt((this.r + 3 * this.width) * sin(current_theta) + this.dy)
+        for (var i = 0; i < global_comp.length; i++) {
+            global_comp[i].setTransition(1)
+            if (global_comp[i] != this)
+                global_comp[i].shadeColor(0.5)
+        }
+    }
+    unFocus() {
+        var svg = d3.select('#main-svg');
+        toolTipRemove(svg)
 
-        //E
-        s += arc_to(current_theta, current_theta + theta_delta_b, this.r + 3 * this.width, this.dx, this.dy)
-        current_theta = current_theta + theta_delta_b
-        s += 'L' + parseInt((this.r + 3 * this.width) * cos(current_theta) + this.dx) + ' ' + parseInt((this.r + 3 * this.width) * sin(current_theta) + this.dy)
-
-        //F
-        s += 'L' + parseInt((this.r + 2 * this.width) * cos(current_theta) + this.dx) + ' ' + parseInt((this.r + 2 * this.width) * sin(current_theta) + this.dy)
-
-        //G
-        s += arc_to(current_theta, current_theta - theta_delta_c, this.r + 2 * this.width, this.dx, this.dy)
-        current_theta = current_theta - theta_delta_c
-        s += 'L' + parseInt((this.r + 2 * this.width) * cos(current_theta) + this.dx) + ' ' + parseInt((this.r + 2 * this.width) * sin(current_theta) + this.dy)
-
-        //H
-        s += 'L' + parseInt((this.r + this.width) * cos(current_theta) + this.dx) + ' ' + parseInt((this.r + this.width) * sin(current_theta) + this.dy)
-
-        //I
-        s += arc_to(current_theta, current_theta + theta_delta_d, this.r + this.width, this.dx, this.dy)
-        current_theta = current_theta + theta_delta_d
-        s += 'L' + parseInt((this.r + this.width) * cos(current_theta) + this.dx) + ' ' + parseInt((this.r + this.width) * sin(current_theta) + this.dy)
-
-        //J
-        s += 'L' + parseInt((this.r) * cos(current_theta) + this.dx) + ' ' + parseInt((this.r) * sin(current_theta) + this.dy)
-
-        //K
-        s += arc_to(current_theta, current_theta - theta_delta_d - theta_delta_e - this.branch_width, this.r, this.dx, this.dy)
-        current_theta = current_theta - theta_delta_d - theta_delta_e - this.branch_width
-        s += 'L' + parseInt((this.r) * cos(current_theta) + this.dx) + ' ' + parseInt((this.r) * sin(current_theta) + this.dy)
-
-        //L
-        s += 'L' + parseInt((this.r + this.width) * cos(current_theta) + this.dx) + ' ' + parseInt((this.r + this.width) * sin(current_theta) + this.dy)
-
-        //M
-        s += arc_to(current_theta, current_theta + theta_delta_e, this.r + this.width, this.dx, this.dy)
-        current_theta = current_theta + theta_delta_e
-        s += 'L' + parseInt((this.r + this.width) * cos(current_theta) + this.dx) + ' ' + parseInt((this.r + this.width) * sin(current_theta) + this.dy)
-
-        //N
-        s += 'L' + parseInt((this.r + 2 * this.width) * cos(current_theta) + this.dx) + ' ' + parseInt((this.r + 2 * this.width) * sin(current_theta) + this.dy)
-
-        //O
-        s += arc_to(current_theta, current_theta - theta_delta_f, this.r + 2 * this.width, this.dx, this.dy)
-        current_theta = current_theta - theta_delta_f
-        s += 'L' + parseInt((this.r + 2 * this.width) * cos(current_theta) + this.dx) + ' ' + parseInt((this.r + 2 * this.width) * sin(current_theta) + this.dy)
-
-        //P
-        s += 'L' + parseInt((this.r + 3 * this.width) * cos(current_theta) + this.dx) + ' ' + parseInt((this.r + 3 * this.width) * sin(current_theta) + this.dy)
-
-        //Q
-        //x = start_theta - theta_delta_a - this.branch_width - current_theta
-        s += arc_to(current_theta, start_theta - theta_delta_a - this.branch_width, this.r + 3 * this.width, this.dx, this.dy)
-        current_theta = start_theta - theta_delta_a - this.branch_width
-        s += 'L' + parseInt((this.r + 3 * this.width) * cos(current_theta) + this.dx) + ' ' + parseInt((this.r + 3 * this.width) * sin(current_theta) + this.dy)
-
-        //R
-        s += 'L' + parseInt((this.r + 4 * this.width) * cos(current_theta) + this.dx) + ' ' + parseInt((this.r + 4 * this.width) * sin(current_theta) + this.dy)
-
-        //S
-        s += arc_to(current_theta, current_theta - theta_delta_g, this.r + 4 * this.width, this.dx, this.dy)
-        current_theta = current_theta - theta_delta_g
-        s += 'L' + parseInt((this.r + 4 * this.width) * cos(current_theta) + this.dx) + ' ' + parseInt((this.r + 4 * this.width) * sin(current_theta) + this.dy)
-
-        //T
-        s += 'L' + parseInt((this.r + 5 * this.width) * cos(current_theta) + this.dx) + ' ' + parseInt((this.r + 5 * this.width) * sin(current_theta) + this.dy)
-
-        //U
-        s += arc_to(current_theta, start_theta, this.r + 5 * this.width, this.dx, this.dy)
-        current_theta = start_theta
-        s += 'L' + parseInt((this.r + 5 * this.width) * cos(current_theta) + this.dx) + ' ' + parseInt((this.r + 5 * this.width) * sin(current_theta) + this.dy)
-
-        this.component.attr('d', s)
+        for (var i = 0; i < global_comp.length; i++) {
+            global_comp[i].setTransition(0)
+            if (global_comp[i] != this)
+                global_comp[i].revertColor()
+        }
     }
     draw() {
-        for (var j = 0; j < this.data.length; j++) {
-            this.data[j].translate(map(this.noise.getNoise(frameCount * .01 * j), 0, 1, -5, 5), map(this.noise.getNoise(frameCount * .01 * (this.data.length - j)), 0, 1, -5, 5));
-        }
+        var current_theta = this.start_theta;
+        var s = ''
+        //A
+        s += 'M' + ((this.r + 5 * this.width) * cos(current_theta) + this.dx) + ' ' + ((this.r + 5 * this.width) * sin(current_theta) + this.dy)
+        //B
+        //s += 'L' + ((this.r + 4 * this.width) * cos(current_theta) + this.dx) + ' ' + ((this.r + 4 * this.width) * sin(current_theta) + this.dy)
+        var x1 = (this.r + 5 * this.width) * cos(current_theta) + this.dx
+        var y1 = (this.r + 5 * this.width) * sin(current_theta) + this.dy
+        var x2 = (this.r + 4 * this.width) * cos(current_theta) + this.dx
+        var y2 = (this.r + 4 * this.width) * sin(current_theta) + this.dy
+        s += alt_arc_to(x1, y1, x2, y2, this.dx, this.dy, 0)
+
+        //C
+        s += arc_to(current_theta, current_theta - this.theta_delta_a, this.r + 4 * this.width, this.dx, this.dy, this.cnoise)
+        current_theta = current_theta - this.theta_delta_a
+        s += 'L' + ((this.r + 4 * this.width) * cos(current_theta) + this.dx) + ' ' + ((this.r + 4 * this.width) * sin(current_theta) + this.dy)
+
+        //D
+        s += 'L' + ((this.r + 3 * this.width) * cos(current_theta) + this.dx) + ' ' + ((this.r + 3 * this.width) * sin(current_theta) + this.dy)
+        /*
+        x1 = (this.r + 4 * this.width) * cos(current_theta) + this.dx
+        y1 = (this.r + 4 * this.width) * sin(current_theta) + this.dy
+        x2 = (this.r + 3 * this.width) * cos(current_theta) + this.dx
+        y2 = (this.r + 3 * this.width) * sin(current_theta) + this.dy
+        s += alt_arc_to(x1, y1, x2, y2, this.dx, this.dy, 0)
+        */
+
+        //E
+        s += arc_to(current_theta, current_theta + this.theta_delta_b, this.r + 3 * this.width, this.dx, this.dy, this.cnoise)
+        current_theta = current_theta + this.theta_delta_b
+        s += 'L' + ((this.r + 3 * this.width) * cos(current_theta) + this.dx) + ' ' + ((this.r + 3 * this.width) * sin(current_theta) + this.dy)
+
+        //F
+        //s += 'L' + ((this.r + 2 * this.width) * cos(current_theta) + this.dx) + ' ' + ((this.r + 2 * this.width) * sin(current_theta) + this.dy)
+        x1 = (this.r + 3 * this.width) * cos(current_theta) + this.dx
+        y1 = (this.r + 3 * this.width) * sin(current_theta) + this.dy
+        x2 = (this.r + 2 * this.width) * cos(current_theta) + this.dx
+        y2 = (this.r + 2 * this.width) * sin(current_theta) + this.dy
+        s += alt_arc_to(x1, y1, x2, y2, this.dx, this.dy, 0)
+
+        //G
+        s += arc_to(current_theta, current_theta - this.theta_delta_c, this.r + 2 * this.width, this.dx, this.dy, this.cnoise)
+        current_theta = current_theta - this.theta_delta_c
+        s += 'L' + ((this.r + 2 * this.width) * cos(current_theta) + this.dx) + ' ' + ((this.r + 2 * this.width) * sin(current_theta) + this.dy)
+
+        //H
+        s += 'L' + ((this.r + this.width) * cos(current_theta) + this.dx) + ' ' + ((this.r + this.width) * sin(current_theta) + this.dy)
+        /*
+        x1 = (this.r + 2 * this.width) * cos(current_theta) + this.dx
+        y1 = (this.r + 2 * this.width) * sin(current_theta) + this.dy
+        x2 = (this.r + 1 * this.width) * cos(current_theta) + this.dx
+        y2 = (this.r + 1 * this.width) * sin(current_theta) + this.dy
+        s += alt_arc_to(x1, y1, x2, y2, this.dx, this.dy, 0)
+        */
+
+
+        //I
+        s += arc_to(current_theta, current_theta + this.theta_delta_d, this.r + this.width, this.dx, this.dy, this.cnoise)
+        current_theta = current_theta + this.theta_delta_d
+        s += 'L' + ((this.r + this.width) * cos(current_theta) + this.dx) + ' ' + ((this.r + this.width) * sin(current_theta) + this.dy)
+
+        //J
+        //s += 'L' + ((this.r) * cos(current_theta) + this.dx) + ' ' + ((this.r) * sin(current_theta) + this.dy)
+        x1 = (this.r + 1 * this.width) * cos(current_theta) + this.dx
+        y1 = (this.r + 1 * this.width) * sin(current_theta) + this.dy
+        x2 = (this.r) * cos(current_theta) + this.dx
+        y2 = (this.r) * sin(current_theta) + this.dy
+        s += alt_arc_to(x1, y1, x2, y2, this.dx, this.dy, 0)
+
+        //K
+        s += arc_to(current_theta, current_theta - this.theta_delta_d - this.theta_delta_e - this.branch_width, this.r, this.dx, this.dy, this.cnoise)
+        current_theta = current_theta - this.theta_delta_d - this.theta_delta_e - this.branch_width
+        s += 'L' + ((this.r) * cos(current_theta) + this.dx) + ' ' + ((this.r) * sin(current_theta) + this.dy)
+
+        //L
+        //s += 'L' + ((this.r + this.width) * cos(current_theta) + this.dx) + ' ' + ((this.r + this.width) * sin(current_theta) + this.dy)
+        x1 = (this.r) * cos(current_theta) + this.dx
+        y1 = (this.r) * sin(current_theta) + this.dy
+        x2 = (this.r + this.width) * cos(current_theta) + this.dx
+        y2 = (this.r + this.width) * sin(current_theta) + this.dy
+        s += alt_arc_to(x1, y1, x2, y2, this.dx, this.dy, Math.PI)
+
+        //M
+        s += arc_to(current_theta, current_theta + this.theta_delta_e, this.r + this.width, this.dx, this.dy, this.cnoise)
+        current_theta = current_theta + this.theta_delta_e
+        s += 'L' + ((this.r + this.width) * cos(current_theta) + this.dx) + ' ' + ((this.r + this.width) * sin(current_theta) + this.dy)
+
+        //N
+        s += 'L' + ((this.r + 2 * this.width) * cos(current_theta) + this.dx) + ' ' + ((this.r + 2 * this.width) * sin(current_theta) + this.dy)
+        /*
+        x1 = (this.r + this.width) * cos(current_theta) + this.dx
+        y1 = (this.r + this.width) * sin(current_theta) + this.dy
+        x2 = (this.r + 2 * this.width) * cos(current_theta) + this.dx
+        y2 = (this.r + 2 * this.width) * sin(current_theta) + this.dy
+        s += alt_arc_to(x1, y1, x2, y2, this.dx, this.dy, Math.PI)
+        */
+
+        //O
+        s += arc_to(current_theta, current_theta - this.theta_delta_f, this.r + 2 * this.width, this.dx, this.dy, this.cnoise)
+        current_theta = current_theta - this.theta_delta_f
+        s += 'L' + ((this.r + 2 * this.width) * cos(current_theta) + this.dx) + ' ' + ((this.r + 2 * this.width) * sin(current_theta) + this.dy)
+
+        //P
+        //s += 'L' + ((this.r + 3 * this.width) * cos(current_theta) + this.dx) + ' ' + ((this.r + 3 * this.width) * sin(current_theta) + this.dy)
+        x1 = (this.r + 2 * this.width) * cos(current_theta) + this.dx
+        y1 = (this.r + 2 * this.width) * sin(current_theta) + this.dy
+        x2 = (this.r + 3 * this.width) * cos(current_theta) + this.dx
+        y2 = (this.r + 3 * this.width) * sin(current_theta) + this.dy
+        s += alt_arc_to(x1, y1, x2, y2, this.dx, this.dy, Math.PI)
+
+        //Q
+        //x = this.start_theta - this.theta_delta_a - this.branch_width - current_theta
+        s += arc_to(current_theta, this.start_theta - this.theta_delta_a - this.branch_width, this.r + 3 * this.width, this.dx, this.dy, this.cnoise)
+        current_theta = this.start_theta - this.theta_delta_a - this.branch_width
+        s += 'L' + ((this.r + 3 * this.width) * cos(current_theta) + this.dx) + ' ' + ((this.r + 3 * this.width) * sin(current_theta) + this.dy)
+
+        //R
+        s += 'L' + ((this.r + 4 * this.width) * cos(current_theta) + this.dx) + ' ' + ((this.r + 4 * this.width) * sin(current_theta) + this.dy)
+        /*
+        x1 = (this.r + 3 * this.width) * cos(current_theta) + this.dx
+        y1 = (this.r + 3 * this.width) * sin(current_theta) + this.dy
+        x2 = (this.r + 4 * this.width) * cos(current_theta) + this.dx
+        y2 = (this.r + 4 * this.width) * sin(current_theta) + this.dy
+        s += alt_arc_to(x1, y1, x2, y2, this.dx, this.dy, Math.PI)
+        */
+
+        //S
+        s += arc_to(current_theta, current_theta - this.theta_delta_g, this.r + 4 * this.width, this.dx, this.dy, this.cnoise)
+        current_theta = current_theta - this.theta_delta_g
+        s += 'L' + ((this.r + 4 * this.width) * cos(current_theta) + this.dx) + ' ' + ((this.r + 4 * this.width) * sin(current_theta) + this.dy)
+
+        //T
+        //s += 'L' + ((this.r + 5 * this.width) * cos(current_theta) + this.dx) + ' ' + ((this.r + 5 * this.width) * sin(current_theta) + this.dy)
+        x1 = (this.r + 4 * this.width) * cos(current_theta) + this.dx
+        y1 = (this.r + 4 * this.width) * sin(current_theta) + this.dy
+        x2 = (this.r + 5 * this.width) * cos(current_theta) + this.dx
+        y2 = (this.r + 5 * this.width) * sin(current_theta) + this.dy
+        s += alt_arc_to(x1, y1, x2, y2, this.dx, this.dy, Math.PI)
+
+        //U
+        s += arc_to(current_theta, this.start_theta, this.r + 5 * this.width, this.dx, this.dy, this.cnoise)
+        current_theta = this.start_theta
+        s += 'L' + ((this.r + 5 * this.width) * cos(current_theta) + this.dx) + ' ' + ((this.r + 5 * this.width) * sin(current_theta) + this.dy)
+
+        this.component.attr('d', s);
+        var transx = map(this.cnoise.getNoise(frameCount * .03), 0, 1, -7, 7)
+        var transy = map(this.cnoise.getNoise(frameCount * .03 + this.transrng), 0, 1, -7, 7)
+        this.component.attr('transform', 'translate(' + transx + ', ' + transy + ') rotate(' + 5*noise(frameCount*0.01)+ ' ' + this.dx + ' ' + this.dy + ')')
     }
 }

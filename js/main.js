@@ -9,6 +9,13 @@ function setup() {
         noLoop()
     }
     */
+    button = createButton('reset')
+    button.mousePressed(resetSketch)
+    resetSketch()
+}
+
+function resetSketch() {
+    d3.select('svg').remove();
     var svg_width = 700;
     var svg_height = 700;
     var centerx = svg_width / 2;
@@ -46,9 +53,13 @@ function setup() {
     lysosome = new Lysosome(svg, 15, 3, centerx - 115, centery + 100, '#cb58bf', '#831973', '#7f377b', 'lysosome', 'Lysosome')
     lysosome_b = new Lysosome(svg, 8, 3, centerx - 185, centery + 20, '#cb58bf', '#831973', '#7f377b', 'lysosome_b', 'Lysosome')
 
-    mito = new Mitochondria(svg, 60, 30, centerx - 35, centery + 160, random(360), shadeHexColor('#9e71d2', -0.3), '#9e71d2',  'mito', 'Mitochondria')
-    mito_b = new Mitochondria(svg, 70, 25, centerx + 135, centery, random(360), shadeHexColor('#9e71d2', -0.3), '#9e71d2',  'mito_b', 'Mitochondria')
+    mito = new Mitochondria(svg, 60, 30, centerx - 35, centery + 160, random(360), shadeHexColor('#9e71d2', -0.3), '#9e71d2', 'mito', 'Mitochondria')
+    mito_b = new Mitochondria(svg, 70, 25, centerx + 135, centery, random(360), shadeHexColor('#9e71d2', -0.3), '#9e71d2', 'mito_b', 'Mitochondria')
+
+    smooth_er = new ER(svg, 1, 8, 0.1, 3, -Math.PI / 2 + 1, nuclear_membrane, 10, '#9e71d2', 'smooth_er', 'Smooth ER')
+
 }
+
 
 function draw() {
     cell_membrane.draw();
@@ -61,4 +72,5 @@ function draw() {
     lysosome_b.draw();
     mito.draw();
     mito_b.draw();
+    smooth_er.draw();
 }
