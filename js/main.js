@@ -9,9 +9,11 @@ function setup() {
         noLoop()
     }
     */
-    button = createButton('reset')
-    button.mousePressed(resetSketch)
     resetSketch()
+    /*
+        button = createButton('reset')
+    button.mousePressed(resetSketch)
+    */
 }
 
 function resetSketch() {
