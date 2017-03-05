@@ -13,13 +13,13 @@ class ER {
             .attr('id', id)
             .style('cursor', 'pointer');
         this.start_theta = start_angle;
-        this.theta_delta_a = random(this.length/2, this.length)
-        this.theta_delta_b = random(this.length/2, this.length)
-        this.theta_delta_c = random(this.length/2, this.length)
-        this.theta_delta_d = random(this.length/2, this.length)
-        this.theta_delta_e = random(PI/16, PI/8)
-        this.theta_delta_f = random(PI/8, PI/5)
-        this.theta_delta_g = random(PI/8, PI/5)
+        this.theta_delta_a = random(this.length / 2, this.length)
+        this.theta_delta_b = random(this.length / 2, this.length)
+        this.theta_delta_c = random(this.length / 2, this.length)
+        this.theta_delta_d = random(this.length / 2, this.length)
+        this.theta_delta_e = random(PI / 16, PI / 8)
+        this.theta_delta_f = random(PI / 8, PI / 5)
+        this.theta_delta_g = random(PI / 8, PI / 5)
         this.transrng = random(5)
         this.name = name;
         this.id = id;
@@ -44,8 +44,8 @@ class ER {
         this.component.attr('fill', this.fill)
     }
     setTransition(amount) {
-      this.component.style('transition', amount + 's');
-      this.transition = amount;
+        this.component.style('transition', amount + 's');
+        this.transition = amount;
     }
     focus(e) {
         var svg = d3.select('#main-svg');
@@ -217,8 +217,12 @@ class ER {
         var transx = map(noise(frameCount * .008), 0, 1, -7, 7)
         var transy = map(noise(frameCount * .008 + this.transrng), 0, 1, -7, 7)
 
-        this.component.transition()
-          .duration(this.transition*1000)
-          .attr('transform', 'translate(' + transx + ', ' + transy + ') rotate(' + 5*noise(frameCount*0.01)+ ' ' + this.dx + ' ' + this.dy + ')')
+        if (transition > 0) {
+            this.component.transition()
+                .duration(this.transition * 1000)
+                .attr('transform', 'translate(' + transx + ', ' + transy + ') rotate(' + 5 * noise(frameCount * 0.01) + ' ' + this.dx + ' ' + this.dy + ')')
+        } else {
+            this.component.attr('transform', 'translate(' + transx + ', ' + transy + ') rotate(' + 5 * noise(frameCount * 0.01) + ' ' + this.dx + ' ' + this.dy + ')')
+        }
     }
 }
