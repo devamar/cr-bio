@@ -8,7 +8,7 @@
  * @param {int} frequency - Frequency of the displacement of the blob.
  * @param {int} dx - Horizontal displacement from position (0,0) of the blob.
  * @param {int} dy - Vertical displacement from position (0,0) of the blob.
- * @param {CircularNoise} noise - Noise used to displace the blob.
+ * @param {BlobNoise} noise - Noise used to displace the blob.
  * @param {String} fill - Fill of the blob, ie. '#c0392b' (Hex Recommended).
  * @param {String} id - HTML id of the blob, ie. 'cell_membrane'.
  * @param {String} name - Name of the blob, ie. 'Cell Membrane'
@@ -16,7 +16,7 @@
 class Blob {
     constructor(container, power, width, height, variance, frequency, dx, dy, noise, fill, id, name, dropshadow = false) {
         this.power = power;
-        var rng = Math.random() * variance;
+        var rng = random(variance);
         this.width = width + rng;
         this.height = height + rng;
         this.frequency = frequency;
@@ -37,7 +37,7 @@ class Blob {
                 .attr('filter', 'url(#blur)')
                 .style('cursor', 'pointer');
         }
-        
+
         this.component = container.append('path')
             .attr('fill', fill)
             .attr('id', id)
@@ -86,5 +86,4 @@ class Blob {
                 global_comp[i].revertColor()
         }
     }
-    addDropShadow() {}
 }

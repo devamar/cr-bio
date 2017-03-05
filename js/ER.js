@@ -6,7 +6,6 @@ class ER {
         this.r = surround.width + padding;
         this.dx = surround.dx;
         this.dy = surround.dy;
-        this.cnoise = new CircularNoise(0.2);
         this.component = container.append('path')
             .attr('fill', fill)
             .attr('stroke', 'none')
@@ -14,17 +13,18 @@ class ER {
             .attr('id', id)
             .style('cursor', 'pointer');
         this.start_theta = start_angle;
-        this.theta_delta_a = Math.random() * (this.length/2) + this.length/2;
-        this.theta_delta_b = Math.random() * (this.length/2) + this.length/2;
-        this.theta_delta_c = Math.random() * (this.length/2) + this.length/2;
-        this.theta_delta_d = Math.random() * (this.length/2) + this.length/2;
-        this.theta_delta_e = Math.random() * Math.PI / 8 + Math.PI/16
-        this.theta_delta_f = Math.random() * Math.PI / 5 + Math.PI/8
-        this.theta_delta_g = Math.random() * Math.PI / 5 + Math.PI/8
+        this.theta_delta_a = random(this.length/2, this.length)
+        this.theta_delta_b = random(this.length/2, this.length)
+        this.theta_delta_c = random(this.length/2, this.length)
+        this.theta_delta_d = random(this.length/2, this.length)
+        this.theta_delta_e = random(PI/16, PI/8)
+        this.theta_delta_f = random(PI/8, PI/5)
+        this.theta_delta_g = random(PI/8, PI/5)
         this.transrng = random(5)
         this.name = name;
         this.id = id;
         this.fill = fill;
+        this.transition = 0;
 
         var er = this;
 
@@ -44,7 +44,8 @@ class ER {
         this.component.attr('fill', this.fill)
     }
     setTransition(amount) {
-      this.component.style('transition', amount + 's')
+      this.component.style('transition', amount + 's');
+      this.transition = amount;
     }
     focus(e) {
         var svg = d3.select('#main-svg');
@@ -77,10 +78,10 @@ class ER {
         var y1 = (this.r + 5 * this.width) * sin(current_theta) + this.dy
         var x2 = (this.r + 4 * this.width) * cos(current_theta) + this.dx
         var y2 = (this.r + 4 * this.width) * sin(current_theta) + this.dy
-        s += alt_arc_to(x1, y1, x2, y2, this.dx, this.dy, 0)
+        s += alt_arc_to(x1, y1, x2, y2, this.dx, this.dy)
 
         //C
-        s += arc_to(current_theta, current_theta - this.theta_delta_a, this.r + 4 * this.width, this.dx, this.dy, this.cnoise)
+        s += arc_to(current_theta, current_theta - this.theta_delta_a, this.r + 4 * this.width, this.dx, this.dy)
         current_theta = current_theta - this.theta_delta_a
         s += 'L' + ((this.r + 4 * this.width) * cos(current_theta) + this.dx) + ' ' + ((this.r + 4 * this.width) * sin(current_theta) + this.dy)
 
@@ -95,7 +96,7 @@ class ER {
         */
 
         //E
-        s += arc_to(current_theta, current_theta + this.theta_delta_b, this.r + 3 * this.width, this.dx, this.dy, this.cnoise)
+        s += arc_to(current_theta, current_theta + this.theta_delta_b, this.r + 3 * this.width, this.dx, this.dy)
         current_theta = current_theta + this.theta_delta_b
         s += 'L' + ((this.r + 3 * this.width) * cos(current_theta) + this.dx) + ' ' + ((this.r + 3 * this.width) * sin(current_theta) + this.dy)
 
@@ -105,10 +106,10 @@ class ER {
         y1 = (this.r + 3 * this.width) * sin(current_theta) + this.dy
         x2 = (this.r + 2 * this.width) * cos(current_theta) + this.dx
         y2 = (this.r + 2 * this.width) * sin(current_theta) + this.dy
-        s += alt_arc_to(x1, y1, x2, y2, this.dx, this.dy, 0)
+        s += alt_arc_to(x1, y1, x2, y2, this.dx, this.dy)
 
         //G
-        s += arc_to(current_theta, current_theta - this.theta_delta_c, this.r + 2 * this.width, this.dx, this.dy, this.cnoise)
+        s += arc_to(current_theta, current_theta - this.theta_delta_c, this.r + 2 * this.width, this.dx, this.dy)
         current_theta = current_theta - this.theta_delta_c
         s += 'L' + ((this.r + 2 * this.width) * cos(current_theta) + this.dx) + ' ' + ((this.r + 2 * this.width) * sin(current_theta) + this.dy)
 
@@ -124,7 +125,7 @@ class ER {
 
 
         //I
-        s += arc_to(current_theta, current_theta + this.theta_delta_d, this.r + this.width, this.dx, this.dy, this.cnoise)
+        s += arc_to(current_theta, current_theta + this.theta_delta_d, this.r + this.width, this.dx, this.dy)
         current_theta = current_theta + this.theta_delta_d
         s += 'L' + ((this.r + this.width) * cos(current_theta) + this.dx) + ' ' + ((this.r + this.width) * sin(current_theta) + this.dy)
 
@@ -134,10 +135,10 @@ class ER {
         y1 = (this.r + 1 * this.width) * sin(current_theta) + this.dy
         x2 = (this.r) * cos(current_theta) + this.dx
         y2 = (this.r) * sin(current_theta) + this.dy
-        s += alt_arc_to(x1, y1, x2, y2, this.dx, this.dy, 0)
+        s += alt_arc_to(x1, y1, x2, y2, this.dx, this.dy)
 
         //K
-        s += arc_to(current_theta, current_theta - this.theta_delta_d - this.theta_delta_e - this.branch_width, this.r, this.dx, this.dy, this.cnoise)
+        s += arc_to(current_theta, current_theta - this.theta_delta_d - this.theta_delta_e - this.branch_width, this.r, this.dx, this.dy)
         current_theta = current_theta - this.theta_delta_d - this.theta_delta_e - this.branch_width
         s += 'L' + ((this.r) * cos(current_theta) + this.dx) + ' ' + ((this.r) * sin(current_theta) + this.dy)
 
@@ -147,10 +148,10 @@ class ER {
         y1 = (this.r) * sin(current_theta) + this.dy
         x2 = (this.r + this.width) * cos(current_theta) + this.dx
         y2 = (this.r + this.width) * sin(current_theta) + this.dy
-        s += alt_arc_to(x1, y1, x2, y2, this.dx, this.dy, Math.PI)
+        s += alt_arc_to(x1, y1, x2, y2, this.dx, this.dy)
 
         //M
-        s += arc_to(current_theta, current_theta + this.theta_delta_e, this.r + this.width, this.dx, this.dy, this.cnoise)
+        s += arc_to(current_theta, current_theta + this.theta_delta_e, this.r + this.width, this.dx, this.dy)
         current_theta = current_theta + this.theta_delta_e
         s += 'L' + ((this.r + this.width) * cos(current_theta) + this.dx) + ' ' + ((this.r + this.width) * sin(current_theta) + this.dy)
 
@@ -165,7 +166,7 @@ class ER {
         */
 
         //O
-        s += arc_to(current_theta, current_theta - this.theta_delta_f, this.r + 2 * this.width, this.dx, this.dy, this.cnoise)
+        s += arc_to(current_theta, current_theta - this.theta_delta_f, this.r + 2 * this.width, this.dx, this.dy)
         current_theta = current_theta - this.theta_delta_f
         s += 'L' + ((this.r + 2 * this.width) * cos(current_theta) + this.dx) + ' ' + ((this.r + 2 * this.width) * sin(current_theta) + this.dy)
 
@@ -175,11 +176,11 @@ class ER {
         y1 = (this.r + 2 * this.width) * sin(current_theta) + this.dy
         x2 = (this.r + 3 * this.width) * cos(current_theta) + this.dx
         y2 = (this.r + 3 * this.width) * sin(current_theta) + this.dy
-        s += alt_arc_to(x1, y1, x2, y2, this.dx, this.dy, Math.PI)
+        s += alt_arc_to(x1, y1, x2, y2, this.dx, this.dy)
 
         //Q
         //x = this.start_theta - this.theta_delta_a - this.branch_width - current_theta
-        s += arc_to(current_theta, this.start_theta - this.theta_delta_a - this.branch_width, this.r + 3 * this.width, this.dx, this.dy, this.cnoise)
+        s += arc_to(current_theta, this.start_theta - this.theta_delta_a - this.branch_width, this.r + 3 * this.width, this.dx, this.dy)
         current_theta = this.start_theta - this.theta_delta_a - this.branch_width
         s += 'L' + ((this.r + 3 * this.width) * cos(current_theta) + this.dx) + ' ' + ((this.r + 3 * this.width) * sin(current_theta) + this.dy)
 
@@ -194,7 +195,7 @@ class ER {
         */
 
         //S
-        s += arc_to(current_theta, current_theta - this.theta_delta_g, this.r + 4 * this.width, this.dx, this.dy, this.cnoise)
+        s += arc_to(current_theta, current_theta - this.theta_delta_g, this.r + 4 * this.width, this.dx, this.dy)
         current_theta = current_theta - this.theta_delta_g
         s += 'L' + ((this.r + 4 * this.width) * cos(current_theta) + this.dx) + ' ' + ((this.r + 4 * this.width) * sin(current_theta) + this.dy)
 
@@ -204,16 +205,20 @@ class ER {
         y1 = (this.r + 4 * this.width) * sin(current_theta) + this.dy
         x2 = (this.r + 5 * this.width) * cos(current_theta) + this.dx
         y2 = (this.r + 5 * this.width) * sin(current_theta) + this.dy
-        s += alt_arc_to(x1, y1, x2, y2, this.dx, this.dy, Math.PI)
+        s += alt_arc_to(x1, y1, x2, y2, this.dx, this.dy)
 
         //U
-        s += arc_to(current_theta, this.start_theta, this.r + 5 * this.width, this.dx, this.dy, this.cnoise)
+        s += arc_to(current_theta, this.start_theta, this.r + 5 * this.width, this.dx, this.dy)
         current_theta = this.start_theta
         s += 'L' + ((this.r + 5 * this.width) * cos(current_theta) + this.dx) + ' ' + ((this.r + 5 * this.width) * sin(current_theta) + this.dy)
 
         this.component.attr('d', s);
-        var transx = map(this.cnoise.getNoise(frameCount * .03), 0, 1, -7, 7)
-        var transy = map(this.cnoise.getNoise(frameCount * .03 + this.transrng), 0, 1, -7, 7)
-        this.component.attr('transform', 'translate(' + transx + ', ' + transy + ') rotate(' + 5*noise(frameCount*0.01)+ ' ' + this.dx + ' ' + this.dy + ')')
+
+        var transx = map(noise(frameCount * .008), 0, 1, -7, 7)
+        var transy = map(noise(frameCount * .008 + this.transrng), 0, 1, -7, 7)
+
+        this.component.transition()
+          .duration(this.transition*1000)
+          .attr('transform', 'translate(' + transx + ', ' + transy + ') rotate(' + 5*noise(frameCount*0.01)+ ' ' + this.dx + ' ' + this.dy + ')')
     }
 }

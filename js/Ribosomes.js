@@ -15,15 +15,15 @@
 class Ribosomes {
     constructor(container, r, r_var, amount, dx, dy, dxvar, dyvar, fill, class_name, name) {
         this.data = [] //this.data = [RibsomeA, RibsomeB, RibsomeC ...]
-        this.noise = new CircularNoise(0.5);
+        this.ytrans_offset = random(5);
         while (this.data.length < amount) {
-            var new_dx = Math.random() * dxvar + dx
-            var new_dy = Math.random() * dyvar + dy
-            var new_rad = map(Math.random(), 0, 1, -r_var, r_var) + r
+            var new_dx = random(dx, dx + dxvar)
+            var new_dy = random(dy, dy + dyvar)
+            var new_rad = random(-r_var, r_var) + r
             var no_overlap = true
             for (var i = 0; i < this.data.length; i++) {
-                var d = Math.pow(this.data[i].dx - new_dx, 2) + Math.pow(this.data[i].dy - new_dy, 2)
-                if (d - 100 < Math.pow(this.data[i].r + new_rad, 2)) {
+                var d = sq(this.data[i].dx - new_dx) + sq(this.data[i].dy - new_dy)
+                if (d - 100 < sq(this.data[i].r + new_rad)) {
                     no_overlap = false
                 }
             }
@@ -34,7 +34,7 @@ class Ribosomes {
     }
     draw() {
         for (var j = 0; j < this.data.length; j++) {
-            this.data[j].translate(map(this.noise.getNoise(frameCount * .01 * j), 0, 1, -5, 5), map(this.noise.getNoise(frameCount * .01 * (this.data.length - j)), 0, 1, -5, 5));
+            this.data[j].translate(map(noise(frameCount * .01), 0, 1, -5, 5), map(noise(frameCount * .01 + this.ytrans_offset), 0, 1, -5, 5));
         }
     }
 }

@@ -22,8 +22,9 @@ class Mitochondria {
         this.fill_inner = fill_inner;
         this.id = id;
         this.name = name;
+        this.transition = 0;
 
-        this.trans_cnoise = new CircularNoise(1)
+        this.ytrans_offset = random(5)
 
         this.mito_group = container.append('g')
             .attr('id', id)
@@ -59,7 +60,7 @@ class Mitochondria {
         //Lower Pillars
         var pillar_size = width / 17.5;
         for (var i = width / 4 - width / 8; i < width; i += width / 4) {
-            var height_pillar = map(Math.random(), 0, 1, height / 4, height / 2)
+            var height_pillar = random(height / 4, height / 2)
             pillar_group.append('rect')
                 .attr('fill', fill_outer)
                 .attr('x', dx + i - pillar_size / 2)
@@ -74,7 +75,7 @@ class Mitochondria {
 
         //Upper Pillars
         for (var i = width / 4; i < width; i += width / 4) {
-            var height_pillar = map(Math.random(), 0, 1, height / 4, height / 2)
+            var height_pillar = random(height / 4, height / 2)
             pillar_group.append('rect')
                 .attr('fill', fill_outer)
                 .attr('x', dx + i - pillar_size / 2)
@@ -98,12 +99,18 @@ class Mitochondria {
         global_comp.push(this)
     }
     draw() {
-        var xtrans = map(this.trans_cnoise.getNoise(frameCount * .01), 0, 1, -5, 5)
-        var ytrans = map(this.trans_cnoise.getNoise(frameCount * .01), 0, 1, -5, 5)
+        var xtrans = map(noise(frameCount * .01), 0, 1, -8, 8)
+        var ytrans = map(noise(frameCount * .01 + this.ytrans_offset), 0, 1, -8, 8)
         this.translate(xtrans, ytrans);
     }
     translate(x, y) {
-        this.mito_group.attr('transform', 'translate(' + x + ', ' + y + ') rotate(' + (this.rot + map(noise(frameCount * 0.01), 0, 1, 0, 40)) + ' ' + (this.dx + this.width / 2) + ' ' + (this.dy + this.height / 2) + ')')
+        if (this.transition > 0) {
+            this.mito_group.transition()
+                .duration(this.transition * 1000)
+                .attr('transform', 'translate(' + x + ', ' + y + ') rotate(' + (this.rot + map(noise(frameCount * 0.01), 0, 1, 0, 40)) + ' ' + (this.dx + this.width / 2) + ' ' + (this.dy + this.height / 2) + ')')
+        } else {
+            this.mito_group.attr('transform', 'translate(' + x + ', ' + y + ') rotate(' + (this.rot + map(noise(frameCount * 0.01), 0, 1, 0, 40)) + ' ' + (this.dx + this.width / 2) + ' ' + (this.dy + this.height / 2) + ')')
+        }
     }
     shadeColor(amount) {
         this.outer.attr('fill', shadeHexColor(this.outer.attr('fill'), amount))
@@ -111,14 +118,15 @@ class Mitochondria {
         d3.selectAll('.' + this.id + '_pillar').attr("fill", shadeHexColor(this.fill_outer, amount));
     }
     revertColor() {
-      this.outer.attr('fill', this.fill_outer)
-      this.inner.attr('fill', this.fill_inner)
-      d3.selectAll('.' + this.id + '_pillar').attr("fill", this.fill_outer);
+        this.outer.attr('fill', this.fill_outer)
+        this.inner.attr('fill', this.fill_inner)
+        d3.selectAll('.' + this.id + '_pillar').attr("fill", this.fill_outer);
     }
     setTransition(amount) {
-      this.outer.style('transition', amount + 's')
-      this.inner.style('transition', amount + 's')
-      d3.selectAll('.' + this.id + '_pillar').style("transition", amount + 's');
+        this.outer.style('transition', amount + 's')
+        this.inner.style('transition', amount + 's')
+        this.transition = amount;
+        d3.selectAll('.' + this.id + '_pillar').style("transition", amount + 's');
     }
     focus(e) {
         var svg = d3.select('#main-svg');

@@ -35,19 +35,19 @@ function resetSketch() {
         .attr('in', 'SourceGraphic')
         .attr('stdDeviation', '10');
 
-    //Circular Noises
-    var cNoise = new CircularNoise(0.2);
-    var cNoiseNuclei = new CircularNoise(0.1);
+    //Blob Noises
+    var bNoise = new BlobNoise(0.2);
+    var bNoiseNuclei = new BlobNoise(0.1);
 
     //Component Initialization
-    cell_membrane = new Blob(svg, 2, 250, 250, 5, 10, centerx, centery, cNoise, '#831973', 'cell_stroke', 'Cell Membrane', true);
+    cell_membrane = new Blob(svg, 2, 250, 250, 5, 10, centerx, centery, bNoise, '#831973', 'cell_stroke', 'Cell Membrane', true);
 
-    cytoplasm = new Blob(svg, 2, 240, 240, 5, 10, centerx, centery, cNoise, '#331a50', 'cell', 'Cytoplasm');
+    cytoplasm = new Blob(svg, 2, 240, 240, 5, 10, centerx, centery, bNoise, '#331a50', 'cell', 'Cytoplasm');
 
-    nuclear_membrane = new Blob(svg, 2, 70, 70, 0, 5, centerx, centery, cNoiseNuclei, '#c0392b', 'nucleus_stroke', 'Nuclear Membrane');
-    nucleus = new Blob(svg, 2, 65, 65, 0, 5, centerx, centery, cNoiseNuclei, '#e66457', 'nucleus', 'Nucleus');
+    nuclear_membrane = new Blob(svg, 2, 70, 70, 0, 5, centerx, centery, bNoiseNuclei, '#c0392b', 'nucleus_stroke', 'Nuclear Membrane');
+    nucleus = new Blob(svg, 2, 65, 65, 0, 5, centerx, centery, bNoiseNuclei, '#e66457', 'nucleus', 'Nucleus');
 
-    nuclei = new Blob(svg, 2, 40, 40, 5, 5, centerx, centery + 10, cNoiseNuclei, '#f1c40f', 'nuclei', 'Nuclei');
+    nuclei = new Blob(svg, 2, 40, 40, 5, 5, centerx, centery + 10, bNoiseNuclei, '#f1c40f', 'nuclei', 'Nuclei');
 
     ribosomes = new Ribosomes(svg, 2, 1, 5, centerx + 60, centery + 140, 30, 30, '#9e71d2', 'ribo', 'Ribosomes');
     ribosomes_b = new Ribosomes(svg, 1, 1, 8, centerx - 135, centery - 10, 30, 30, '#9e71d2', 'ribo_b', 'Ribosomes');
@@ -58,7 +58,7 @@ function resetSketch() {
     mito = new Mitochondria(svg, 60, 30, centerx - 35, centery + 160, random(360), shadeHexColor('#9e71d2', -0.3), '#9e71d2', 'mito', 'Mitochondria')
     mito_b = new Mitochondria(svg, 70, 25, centerx + 135, centery, random(360), shadeHexColor('#9e71d2', -0.3), '#9e71d2', 'mito_b', 'Mitochondria')
 
-    smooth_er = new ER(svg, 1, 8, 0.1, 3, -Math.PI / 2 + 1, nuclear_membrane, 10, '#9e71d2', 'smooth_er', 'Smooth ER')
+    smooth_er = new ER(svg, 1, 8, 0.1, 3, -HALF_PI + 1, nuclear_membrane, 10, '#9e71d2', 'smooth_er', 'Smooth ER')
 
 }
 
