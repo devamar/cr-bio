@@ -34,7 +34,7 @@ class Ribosomes {
     }
     draw() {
         for (var j = 0; j < this.data.length; j++) {
-            this.data[j].translate(map(noise(frameCount * .01 + j), 0, 1, -5, 5), map(noise(frameCount * .01 + j + this.ytrans_offset), 0, 1, -5, 5));
+            this.data[j].translate(map(noise(frameCount * .01), 0, 1, -5, 5), map(noise(frameCount * .01 + this.ytrans_offset), 0, 1, -5, 5));
         }
     }
 }
