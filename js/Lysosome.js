@@ -20,7 +20,7 @@ class Lysosome {
         this.debree = []
 
         var blob_cnoise = new BlobNoise(0.001)
-        this.ytrans_offset = random(10)
+        this.ytrans_offset = random(5)
         this.debree_noise = new BlobNoise(0.5);
 
         this.lysosome = container.append('g')
@@ -53,14 +53,13 @@ class Lysosome {
                 this.debree.push(new Ribosome(this.lysosome, new_rad, new_dx, new_dy, fill_debree, id + 'debree', id + 'debree' + this.debree.length, 'Protiens/Enzymes'))
             }
         }
-
         global_comp.push(this)
     }
     draw() {
         this.blob.draw()
         this.membrane.draw()
         for (var j = 0; j < this.debree.length; j++) {
-            this.debree[j].translate(map(noise(frameCount * .01), 0, 1, -5, 5), map(noise(frameCount * .01 + this.ytrans_offset), 0, 1, -5, 5));
+            this.debree[j].translate(map(noise(frameCount * .01 + j), 0, 1, -5, 5), map(noise(frameCount * .01 + j + this.ytrans_offset), 0, 1, -5, 5));
         }
         var xtrans = map(noise(frameCount * .01), 0, 1, -5, 5)
         var ytrans = map(noise(frameCount * .01 + this.ytrans_offset), 0, 1, -5, 5)
