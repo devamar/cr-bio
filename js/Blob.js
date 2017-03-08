@@ -20,8 +20,8 @@ class Blob {
         this.width = width + rng;
         this.height = height + rng;
         this.frequency = frequency;
-        this.dx = dx;
-        this.dy = dy;
+        this.pos = createVector(dx, dy);
+        this.offset = createVector(0, 0);
         this.noise = noise;
         this.fill = fill;
         this.id = id;
@@ -54,8 +54,12 @@ class Blob {
 
         global_comp.push(this)
     }
+    translate(x, y) {
+        this.offset.x = x;
+        this.offset.y = y;
+    }
     draw() {
-        this.component.attr('d', draw_cell(this.width, this.height, 2 / this.power, this.frequency, this.noise, this.dx, this.dy))
+        this.component.attr('d', draw_cell(this.width, this.height, 2 / this.power, this.frequency, this.noise, this.pos.x + this.offset.x, this.pos.y + this.offset.y))
     }
     shadeColor(amount) {
         this.component.attr('fill', shadeHexColor(this.component.attr('fill'), amount))
@@ -64,11 +68,12 @@ class Blob {
         this.component.attr('fill', this.fill)
     }
     setTransition(amount) {
-      this.component.style('transition', amount + 's')
+        this.component.style('transition', amount + 's')
     }
     focus(e) {
+        frameRate(fps_focus)
         var svg = d3.select('#main-svg');
-        toolTip(svg, [this.dx, this.dy], [e.pageX, e.pageY], this.name)
+        toolTip(svg, [this.pos.x + this.offset.x, this.pos.y + this.offset.y], [e.pageX, e.pageY], this.name)
 
         for (var i = 0; i < global_comp.length; i++) {
             global_comp[i].setTransition(1)
@@ -77,6 +82,7 @@ class Blob {
         }
     }
     unFocus() {
+        frameRate(fps)
         var svg = d3.select('#main-svg');
         toolTipRemove(svg)
 

@@ -22,7 +22,6 @@ class Mitochondria {
         this.fill_inner = fill_inner;
         this.id = id;
         this.name = name;
-        this.transition = 0;
 
         this.ytrans_offset = random(5)
 
@@ -104,13 +103,7 @@ class Mitochondria {
         this.translate(xtrans, ytrans);
     }
     translate(x, y) {
-        if (this.transition > 0) {
-            this.mito_group.transition()
-                .duration(this.transition * 1000)
-                .attr('transform', 'translate(' + x + ', ' + y + ') rotate(' + (this.rot + map(noise(frameCount * 0.01), 0, 1, 0, 40)) + ' ' + (this.dx + this.width / 2) + ' ' + (this.dy + this.height / 2) + ')')
-        } else {
-            this.mito_group.attr('transform', 'translate(' + x + ', ' + y + ') rotate(' + (this.rot + map(noise(frameCount * 0.01), 0, 1, 0, 40)) + ' ' + (this.dx + this.width / 2) + ' ' + (this.dy + this.height / 2) + ')')
-        }
+        this.mito_group.attr('transform', 'translate(' + x + ', ' + y + ') rotate(' + (this.rot + map(noise(frameCount * 0.01), 0, 1, 0, 40)) + ' ' + (this.dx + this.width / 2) + ' ' + (this.dy + this.height / 2) + ')')
     }
     shadeColor(amount) {
         this.outer.attr('fill', shadeHexColor(this.outer.attr('fill'), amount))
@@ -125,10 +118,10 @@ class Mitochondria {
     setTransition(amount) {
         this.outer.style('transition', amount + 's')
         this.inner.style('transition', amount + 's')
-        this.transition = amount;
         d3.selectAll('.' + this.id + '_pillar').style("transition", amount + 's');
     }
     focus(e) {
+        frameRate(fps_focus);
         var svg = d3.select('#main-svg');
         toolTip(svg, [this.dx, this.dy], [e.pageX, e.pageY], this.name)
 
@@ -139,6 +132,7 @@ class Mitochondria {
         }
     }
     unFocus() {
+        frameRate(fps)
         var svg = d3.select('#main-svg');
         toolTipRemove(svg)
 

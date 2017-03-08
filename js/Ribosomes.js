@@ -22,7 +22,7 @@ class Ribosomes {
             var new_rad = random(-r_var, r_var) + r
             var no_overlap = true
             for (var i = 0; i < this.data.length; i++) {
-                var d = sq(this.data[i].dx - new_dx) + sq(this.data[i].dy - new_dy)
+                var d = sq(this.data[i].pos.x - new_dx) + sq(this.data[i].pos.y - new_dy)
                 if (d - 100 < sq(this.data[i].r + new_rad)) {
                     no_overlap = false
                 }
@@ -34,7 +34,8 @@ class Ribosomes {
     }
     draw() {
         for (var j = 0; j < this.data.length; j++) {
-            this.data[j].translate(map(noise(frameCount * .01), 0, 1, -5, 5), map(noise(frameCount * .01 + this.ytrans_offset), 0, 1, -5, 5));
+            this.data[j].translate(map(noise(frameCount * .01 + j), 0, 1, -5, 5), map(noise(frameCount * .01 + this.ytrans_offset), 0, 1, -5, 5));
+            this.data[j].draw();
         }
     }
 }
@@ -60,8 +61,9 @@ class Ribosome {
             .style('cursor', 'pointer')
         this.r = r;
         this.id = id;
-        this.dx = dx;
-        this.dy = dy;
+        this.pos = createVector(dx, dy)
+        this.offset = createVector(0,0)
+        this.rng = createVector(random(5), random(5))
         this.fill = fill;
         this.name = name;
         this.class_name = class_name
@@ -75,11 +77,9 @@ class Ribosome {
 
         global_comp.push(this);
     }
-    translate(tx, ty) {
-        var current_cx = parseInt(this.component.attr('cx'));
-        var current_cy = parseInt(this.component.attr('cy'));
-        this.component.attr('cx', this.dx + tx);
-        this.component.attr('cy', this.dy + ty);
+    translate(x, y) {
+        this.offset.x = x
+        this.offset.y = y
     }
     shadeColor(amount) {
         this.component.attr('fill', shadeHexColor(this.component.attr('fill'), amount))
@@ -88,11 +88,17 @@ class Ribosome {
         this.component.attr('fill', this.fill)
     }
     setTransition(amount) {
-      this.component.style('transition', amount + 's')
+        this.component.style('transition', amount + 's')
+    }
+    draw() {
+        //this.translate(map(noise(frameCount * .01 + this.rng.x), 0, 1, -1, 1), map(noise(frameCount * .01 + this.rng.y), 0, 1, -1, 1));
+        this.component.attr('cx', this.pos.x + this.offset.x);
+        this.component.attr('cy', this.pos.y + this.offset.y);
     }
     focus(e) {
+        frameRate(fps_focus);
         var svg = d3.select('#main-svg');
-        toolTip(svg, [this.dx, this.dy], [e.pageX, e.pageY], this.name)
+        toolTip(svg, [this.pos.x + this.offset.x, this.pos.y + this.offset.y], [e.pageX, e.pageY], this.name)
 
         for (var i = 0; i < global_comp.length; i++) {
             global_comp[i].setTransition(1)
@@ -104,6 +110,7 @@ class Ribosome {
         }
     }
     unFocus() {
+        frameRate(fps);
         var svg = d3.select('#main-svg');
         toolTipRemove(svg)
 

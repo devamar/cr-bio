@@ -14,8 +14,9 @@
 class Lysosome {
     constructor(container, r, num_debree, dx, dy, fill, fill_membrane, fill_debree, id, name) {
         this.r = r
-        this.dx = dx
-        this.dy = dy
+        this.pos = createVector(dx, dy)
+        this.offset = createVector(0,0)
+        this.rng = createVector(random(5), random(5))
         this.name = name
         this.debree = []
 
@@ -56,32 +57,31 @@ class Lysosome {
 
         global_comp.push(this)
     }
+    translate(x, y) {
+        this.offset.x = x;
+        this.offset.y = y;
+        this.blob.translate(x, y);
+        this.membrane.translate(x,y);
+        for (var j = 0; j < this.debree.length; j++) {
+            this.debree[j].translate(x, y);
+        }
+    }
     draw() {
         this.blob.draw()
         this.membrane.draw()
         for (var j = 0; j < this.debree.length; j++) {
-            this.debree[j].translate(map(noise(frameCount * .01), 0, 1, -5, 5), map(noise(frameCount * .01 + this.ytrans_offset), 0, 1, -5, 5));
+            this.debree[j].draw();
         }
-        var xtrans = map(noise(frameCount * .01), 0, 1, -5, 5)
-        var ytrans = map(noise(frameCount * .01 + this.ytrans_offset), 0, 1, -5, 5)
+        var xtrans = map(noise(frameCount * .01 + this.rng.x), 0, 1, -10, 10)
+        var ytrans = map(noise(frameCount * .01 + this.rng.y), 0, 1, -10, 10)
         this.translate(xtrans, ytrans);
     }
     setTransition(amount) {
-        this.transition = amount;
     }
     shadeColor(amount) {
 
     }
     revertColor() {
 
-    }
-    translate(x, y) {
-        if (this.transition > 0) {
-            this.lysosome.transition()
-                .duration(this.transition * 1000)
-                .attr('transform', 'translate(' + x + ', ' + y + ')')
-        } else {
-            this.lysosome.attr('transform', 'translate(' + x + ', ' + y + ')')
-        }
     }
 }

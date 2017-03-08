@@ -1,9 +1,11 @@
 var global_comp = [];
+var fps = 30;
+var fps_focus = 10;
 
 function setup() {
     //P5 Init
     noCanvas();
-    frameRate(30);
+    frameRate(fps);
     /*
     if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
         noLoop()
@@ -48,8 +50,8 @@ function resetSketch() {
 
     nuclei = new Blob(svg, 2, 40, 40, 5, 5, centerx, centery + 10, bNoiseNuclei, '#f1c40f', 'nuclei', 'Nuclei');
 
-    ribosomes = new Ribosomes(svg, 2, 1, 5, centerx + 60, centery + 140, 30, 30, '#9e71d2', 'ribo', 'Ribosomes');
-    ribosomes_b = new Ribosomes(svg, 1, 1, 8, centerx - 135, centery - 10, 30, 30, '#9e71d2', 'ribo_b', 'Ribosomes');
+    ribosomes = new Ribosomes(svg, 3, 1, 5, centerx + 60, centery + 140, 30, 30, '#9e71d2', 'ribo', 'Ribosomes');
+    ribosomes_b = new Ribosomes(svg, 2, 1, 8, centerx - 135, centery - 10, 30, 30, '#9e71d2', 'ribo_b', 'Ribosomes');
 
     lysosome = new Lysosome(svg, 15, 3, centerx - 115, centery + 100, '#cb58bf', '#831973', '#7f377b', 'lysosome', 'Lysosome')
     lysosome_b = new Lysosome(svg, 8, 3, centerx - 185, centery + 20, '#cb58bf', '#831973', '#7f377b', 'lysosome_b', 'Lysosome')
@@ -69,6 +71,7 @@ function draw() {
     nucleus.draw();
     nuclei.draw();
     ribosomes.draw();
+    ribosomes_b.draw();
     lysosome.draw();
     lysosome_b.draw();
     mito.draw();
