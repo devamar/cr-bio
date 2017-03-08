@@ -216,16 +216,17 @@ class ER {
 
         var transx = map(noise(frameCount * .008), 0, 1, -7, 7)
         var transy = map(noise(frameCount * .008 + this.transrng), 0, 1, -7, 7)
-        
+
         /*
         if (transition > 0) {
             this.component.transition()
                 .duration(this.transition * 1000)
                 .attr('transform', 'translate(' + transx + ', ' + transy + ') rotate(' + 5 * noise(frameCount * 0.01) + ' ' + this.dx + ' ' + this.dy + ')')
         } else {
-            
+
         }
         */
+        
         this.component.attr('transform', 'translate(' + transx + ', ' + transy + ') rotate(' + 5 * noise(frameCount * 0.01) + ' ' + this.dx + ' ' + this.dy + ')')
     }
 }
