@@ -6,19 +6,12 @@ function setup() {
     //P5 Init
     noCanvas();
     frameRate(fps);
-    /*
-    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-        noLoop()
-    }
-
-    button = createButton('reset')
-    button.mousePressed(resetSketch)
-        */
     resetSketch()
 }
 
 function resetSketch() {
     d3.select('svg').remove();
+
     var svg_width = 700;
     var svg_height = 700;
     var centerx = svg_width / 2;
@@ -26,6 +19,7 @@ function resetSketch() {
 
     //D3 Init
     var body = d3.select('body');
+
     var svg = body.append('svg')
         .attr('width', svg_width)
         .attr('height', svg_height)
@@ -44,6 +38,8 @@ function resetSketch() {
     cell_membrane = new Blob(svg, 2, 250, 250, 5, 10, centerx, centery, bNoise, '#831973', 'cell_stroke', 'Cell Membrane', true);
 
     cytoplasm = new Blob(svg, 2, 240, 240, 5, 10, centerx, centery, bNoise, '#331a50', 'cell', 'Cytoplasm');
+
+    vacuole = new Blob(svg, 2, 60, 40, 10, 10, centerx + 20, centery + 30, bNoise, '#3498db', 'vacuole', 'Cytoplasm');
 
     nuclear_membrane = new Blob(svg, 2, 70, 70, 0, 5, centerx, centery, bNoiseNuclei, '#c0392b', 'nucleus_stroke', 'Nuclear Membrane');
     nucleus = new Blob(svg, 2, 65, 65, 0, 5, centerx, centery, bNoiseNuclei, '#e66457', 'nucleus', 'Nucleus');
