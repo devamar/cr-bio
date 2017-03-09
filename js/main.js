@@ -39,8 +39,6 @@ function resetSketch() {
 
     cytoplasm = new Blob(svg, 2, 240, 240, 5, 10, centerx, centery, bNoise, '#331a50', 'cell', 'Cytoplasm');
 
-    vacuole = new Blob(svg, 2, 60, 40, 10, 10, centerx + 20, centery + 30, bNoise, '#3498db', 'vacuole', 'Cytoplasm');
-
     nuclear_membrane = new Blob(svg, 2, 70, 70, 0, 5, centerx, centery, bNoiseNuclei, '#c0392b', 'nucleus_stroke', 'Nuclear Membrane');
     nucleus = new Blob(svg, 2, 65, 65, 0, 5, centerx, centery, bNoiseNuclei, '#e66457', 'nucleus', 'Nucleus');
 
