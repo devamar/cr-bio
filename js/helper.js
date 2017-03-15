@@ -78,7 +78,7 @@ function toolTipRemove(container) {
 function draw_cell(width, height, na, freq, noise, dx, dy) {
     var s = ''
     for (var theta = 0; theta < TWO_PI; theta += 0.1) {
-        var radius_noise = map(noise.getNoise(theta, frameCount * .02), 0, 1, -freq, freq);
+        var radius_noise = map(noise.getNoise(theta, frameCount * fps_factor * 2), 0, 1, -freq, freq);
         x = pow(abs(cos(theta)), na) * (radius_noise + width) * Math.sign(cos(theta)) + dx;
         y = pow(abs(sin(theta)), na) * (radius_noise + height) * Math.sign(sin(theta)) + dy;
         if (theta == 0) {
@@ -123,6 +123,56 @@ function alt_arc_to(x1, y1, x2, y2, dx, dy) {
     }
     return s
 }
+
+function rough_arc_to(er, start_theta, end_theta, radius, dx, dy) {
+    s = ''
+    increment = 0.1
+    if (start_theta <= end_theta) {
+        for (var theta = start_theta; theta <= end_theta; theta += increment) {
+            var x = radius * cos(theta) + dx
+            var y = radius * sin(theta) + dy
+            if (er.ribosomes.length < 20) {
+                if (int(random(6)) == 5) {
+                    er.addRibo(x, y)
+                }
+            }
+            s += 'L' + x + ' ' + y;
+        }
+    } else {
+        for (var theta = start_theta; theta >= end_theta; theta -= increment) {
+            var x = radius * cos(theta) + dx
+            var y = radius * sin(theta) + dy
+            if (er.ribosomes.length < 20) {
+                if (int(random(6)) == 5) {
+                    er.addRibo(x, y)
+                }
+            }
+            s += 'L' + x + ' ' + y;
+        }
+    }
+    return s
+}
+
+function rough_alt_arc_to(er, x1, y1, x2, y2, dx, dy) {
+
+    var s = ''
+    var radius = sqrt(sq(x1 - x2) + sq(y1 - y2))
+    var cx = (x1 + x2) / 2;
+    var cy = (y1 + y2) / 2;
+    var increment = 1;
+    for (var theta = 0; theta <= TWO_PI; theta += increment) {
+        var x = (radius / 2) * cos(theta) + cx
+        var y = (radius / 2) * sin(theta) + cy
+        if (er.ribosomes.length < 20) {
+            if (int(random(6)) == 5) {
+                er.addRibo(x, y)
+            }
+        }
+        s += 'L' + x + ' ' + y;
+    }
+    return s
+}
+
 
 function draw_line(x1, y1, length) {
     var s = ''

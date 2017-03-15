@@ -1,6 +1,6 @@
 /**
- * Creates an SVG componenet which displaces similar to a 'blob' of liquid.
- * @param {D3Object} container - SVG Container of the blob.
+ * Creates an SVG componenet in the form of a mitochondria.
+ * @param {D3Object} container - SVG Container of the mitochondria.
  * @param {int} width - Width of the mitochondria.
  * @param {int} height - Height of the mitochondria.
  * @param {int} dx - Horizontal displacement from position (0,0) of the mitochondria.
@@ -15,8 +15,8 @@ class Mitochondria {
     constructor(container, width, height, dx, dy, rot, fill_outer, fill_inner, id, name) {
         this.width = width;
         this.height = height;
-        this.dx = dx;
-        this.dy = dy;
+        this.pos = createVector(dx, dy)
+        this.offset = createVector(0, 0)
         this.rot = rot;
         this.fill_outer = fill_outer;
         this.fill_inner = fill_inner;
@@ -25,10 +25,23 @@ class Mitochondria {
 
         this.ytrans_offset = random(5)
 
+        var membrane_offset = (width + height) / 16
         this.mito_group = container.append('g')
             .attr('id', id)
             .attr('transform', 'rotate(' + rot + ' ' + (dx + width / 2) + ' ' + (dy + height / 2) + ')');
 
+        /*
+        this.outer_membrane = this.mito_group.append('rect')
+            .attr('fill', fill_outer_membrane)
+            .attr('x', dx - membrane_offset/2)
+            .attr('y', dy - membrane_offset/2)
+            .attr('width', width + membrane_offset)
+            .attr('height', height + membrane_offset)
+            .attr('rx', (height + membrane_offset) / 2)
+            .attr('ry', (height + membrane_offset) / 2)
+            .attr('id', id + '_outer')
+            .style('cursor', 'pointer');
+        */
         this.outer = this.mito_group.append('rect')
             .attr('fill', fill_outer)
             .attr('x', dx)
@@ -98,12 +111,14 @@ class Mitochondria {
         global_comp.push(this)
     }
     draw() {
-        var xtrans = map(noise(frameCount * .01), 0, 1, -8, 8)
-        var ytrans = map(noise(frameCount * .01 + this.ytrans_offset), 0, 1, -8, 8)
+        this.mito_group.attr('transform', 'translate(' + this.offset.x + ', ' + this.offset.y + ') rotate(' + (this.rot + map(noise(frameCount * fps_factor * 0.1), 0, 1, 0, 360)) + ' ' + (this.pos.x + this.width / 2) + ' ' + (this.pos.y + this.height / 2) + ')')
+        var xtrans = map(noise(frameCount * fps_factor), 0, 1, -8, 8)
+        var ytrans = map(noise(frameCount * fps_factor + this.ytrans_offset), 0, 1, -8, 8)
         this.translate(xtrans, ytrans);
     }
     translate(x, y) {
-        this.mito_group.attr('transform', 'translate(' + x + ', ' + y + ') rotate(' + (this.rot + map(noise(frameCount * 0.01), 0, 1, 0, 40)) + ' ' + (this.dx + this.width / 2) + ' ' + (this.dy + this.height / 2) + ')')
+        this.offset.x = x;
+        this.offset.y = y;
     }
     shadeColor(amount) {
         this.outer.attr('fill', shadeHexColor(this.outer.attr('fill'), amount))
@@ -123,7 +138,7 @@ class Mitochondria {
     focus(e) {
         frameRate(fps_focus);
         var svg = d3.select('#main-svg');
-        toolTip(svg, [this.dx, this.dy], [e.pageX, e.pageY], this.name)
+        toolTip(svg, [this.pos.x, this.pos.y], [e.pageX, e.pageY], this.name)
 
         for (var i = 0; i < global_comp.length; i++) {
             global_comp[i].setTransition(1)
@@ -142,5 +157,10 @@ class Mitochondria {
                 global_comp[i].revertColor()
         }
     }
-    addDropShadow() {}
+    removeFromGlobalComponents() {
+        global_comp.splice(global_comp.indexOf(this), 1)
+    }
+    exit() {
+        this.mito_group.transition().remove().duration(2000).style('opacity', 0)
+    }
 }

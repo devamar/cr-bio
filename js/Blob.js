@@ -11,10 +11,11 @@
  * @param {BlobNoise} noise - Noise used to displace the blob.
  * @param {String} fill - Fill of the blob, ie. '#c0392b' (Hex Recommended).
  * @param {String} id - HTML id of the blob, ie. 'cell_membrane'.
- * @param {String} name - Name of the blob, ie. 'Cell Membrane'
+ * @param {String} name - Name of the blob, ie. 'Cell Membrane'.
+ * @param {bool} dropshadow - If true adds a dropshadow under the blob.
  */
 class Blob {
-    constructor(container, power, width, height, variance, frequency, dx, dy, noise, fill, id, name, dropshadow = false) {
+    constructor(container, power, width, height, variance, frequency, dx, dy, noise, fill, id, name, dropshadow = false, hover = true) {
         this.power = power;
         var rng = random(variance);
         this.width = width + rng;
@@ -28,7 +29,7 @@ class Blob {
         this.container = container;
         this.fill = fill;
         this.name = name;
-
+        this.hover = hover;
         if (dropshadow) {
             this.drop_shadow = container.append('path')
                 .attr('fill', fill)
@@ -43,14 +44,16 @@ class Blob {
             .attr('id', id)
             .style('cursor', 'pointer');
 
-        var blob = this;
+        if (hover) {
+            var blob = this;
 
-        $('#' + id).mouseover(function(e) {
-                blob.focus(e);
-            })
-            .mouseout(function(e) {
-                blob.unFocus(e);
-            });
+            $('#' + id).mouseover(function(e) {
+                    blob.focus(e);
+                })
+                .mouseout(function(e) {
+                    blob.unFocus(e);
+                });
+        }
 
         global_comp.push(this)
     }
@@ -91,5 +94,11 @@ class Blob {
             if (global_comp[i] != this)
                 global_comp[i].revertColor()
         }
+    }
+    removeFromGlobalComponents() {
+        global_comp.splice(global_comp.indexOf(this), 1)
+    }
+    exit() {
+        this.component.transition().remove().duration(2000).style('opacity', 0)
     }
 }

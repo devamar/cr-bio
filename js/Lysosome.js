@@ -15,7 +15,7 @@ class Lysosome {
     constructor(container, r, num_debree, dx, dy, fill, fill_membrane, fill_debree, id, name) {
         this.r = r
         this.pos = createVector(dx, dy)
-        this.offset = createVector(0,0)
+        this.offset = createVector(0, 0)
         this.rng = createVector(random(5), random(5))
         this.name = name
         this.debree = []
@@ -28,6 +28,7 @@ class Lysosome {
             .attr('id', id);
 
         this.membrane = new Blob(this.lysosome, 2, r * 1.2, r * 1.2, r / 5, 2, dx + r, dy + r, blob_cnoise, fill_membrane, id + '_membrane', name + ' Membrane')
+
         this.blob = new Blob(this.lysosome, 2, r, r, r / 5, 2, dx + r, dy + r, blob_cnoise, fill, id + '_blob', name)
 
         var attempts = 0;
@@ -51,17 +52,16 @@ class Lysosome {
                 }
             }
             if (no_overlap) {
-                this.debree.push(new Ribosome(this.lysosome, new_rad, new_dx, new_dy, fill_debree, id + 'debree', id + 'debree' + this.debree.length, 'Protiens/Enzymes'))
+                var new_ribo = new Ribosome(this.lysosome, new_rad, new_dx, new_dy, fill_debree, id + 'debree', id + 'debree' + this.debree.length, 'Protiens/Enzymes')
+                this.debree.push(new_ribo)
             }
         }
-
-        global_comp.push(this)
     }
     translate(x, y) {
         this.offset.x = x;
         this.offset.y = y;
         this.blob.translate(x, y);
-        this.membrane.translate(x,y);
+        this.membrane.translate(x, y);
         for (var j = 0; j < this.debree.length; j++) {
             this.debree[j].translate(x, y);
         }
@@ -72,16 +72,63 @@ class Lysosome {
         for (var j = 0; j < this.debree.length; j++) {
             this.debree[j].draw();
         }
-        var xtrans = map(noise(frameCount * .01 + this.rng.x), 0, 1, -10, 10)
-        var ytrans = map(noise(frameCount * .01 + this.rng.y), 0, 1, -10, 10)
+        var xtrans = map(noise(frameCount * fps_factor + this.rng.x), 0, 1, -10, 10)
+        var ytrans = map(noise(frameCount * fps_factor + this.rng.y), 0, 1, -10, 10)
         this.translate(xtrans, ytrans);
     }
     setTransition(amount) {
+        this.blob.setTransition(amount);
+        this.membrane.setTransition(amount);
+        for (var j = 0; j < this.debree.length; j++) {
+            this.debree[j].setTransition(amount);
+        }
     }
     shadeColor(amount) {
-
+        this.blob.shadeColor(amount);
+        this.membrane.shadeColor(amount);
+        for (var j = 0; j < this.debree.length; j++) {
+            this.debree[j].shadeColor(amount);
+        }
     }
     revertColor() {
+        this.blob.revertColor();
+        this.membrane.revertColor();
+        for (var j = 0; j < this.debree.length; j++) {
+            this.debree[j].revertColor();
+        }
+    }
+    focus(e) {
+        frameRate(fps_focus)
+        var svg = d3.select('#main-svg');
+        toolTip(svg, [this.pos.x + this.offset.x, this.pos.y + this.offset.y], [e.pageX, e.pageY], this.name)
 
+        for (var i = 0; i < global_comp.length; i++) {
+            global_comp[i].setTransition(1)
+            if (global_comp[i] != this)
+                global_comp[i].shadeColor(0.5)
+        }
+    }
+    unFocus() {
+        frameRate(fps)
+        var svg = d3.select('#main-svg');
+        toolTipRemove(svg)
+
+        for (var i = 0; i < global_comp.length; i++) {
+            global_comp[i].setTransition(0)
+            if (global_comp[i] != this)
+                global_comp[i].revertColor()
+        }
+    }
+    click() {
+      for (var i = 0; i <global_comp.length; i++) {
+        if (global_comp[i] != this)
+            global_comp[i].exit();
+      }
+    }
+    removeFromGlobalComponents() {
+        global_comp.splice(global_comp.indexOf(this), 1)
+    }
+    exit() {
+        this.lysosome.transition().remove().duration(2000).style('opacity', 0)
     }
 }

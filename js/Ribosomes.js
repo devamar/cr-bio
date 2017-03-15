@@ -16,7 +16,9 @@ class Ribosomes {
     constructor(container, r, r_var, amount, dx, dy, dxvar, dyvar, fill, class_name, name) {
         this.data = [] //this.data = [RibsomeA, RibsomeB, RibsomeC ...]
         this.ytrans_offset = random(5);
-        while (this.data.length < amount) {
+        var iterations = 0;
+        while (this.data.length < amount && iterations < 500) {
+            iterations++;
             var new_dx = random(dx, dx + dxvar)
             var new_dy = random(dy, dy + dyvar)
             var new_rad = random(-r_var, r_var) + r
@@ -34,7 +36,7 @@ class Ribosomes {
     }
     draw() {
         for (var j = 0; j < this.data.length; j++) {
-            this.data[j].translate(map(noise(frameCount * .01 + j), 0, 1, -5, 5), map(noise(frameCount * .01 + this.ytrans_offset), 0, 1, -5, 5));
+            this.data[j].translate(map(noise(frameCount * fps_factor + j), 0, 1, -8, 8), map(noise(frameCount * fps_factor + this.ytrans_offset), 0, 1, -8, 8));
             this.data[j].draw();
         }
     }
@@ -50,7 +52,7 @@ class Ribosomes {
  * @param {String} name - Name of the Ribosome, ie. 'Ribosomes'
  */
 class Ribosome {
-    constructor(container, r, dx, dy, fill, class_name, id, name) {
+    constructor(container, r, dx, dy, fill, class_name, id, name, hover = true) {
         this.component = container.append('circle')
             .attr('fill', fill)
             .attr('cx', dx)
@@ -59,22 +61,26 @@ class Ribosome {
             .attr('class', class_name)
             .attr('id', id)
             .style('cursor', 'pointer')
+
         this.r = r;
         this.id = id;
         this.pos = createVector(dx, dy)
-        this.offset = createVector(0,0)
+        this.offset = createVector(0, 0)
         this.rng = createVector(random(5), random(5))
         this.fill = fill;
         this.name = name;
         this.class_name = class_name
-        var ribo = this;
-        $('#' + id).mouseover(function(e) {
-                ribo.focus(e);
-            })
-            .mouseout(function(e) {
-                ribo.unFocus(e);
-            });
+        this.hover = hover;
 
+        if (hover) {
+            var ribo = this;
+            $('#' + id).mouseover(function(e) {
+                    ribo.focus(e);
+                })
+                .mouseout(function(e) {
+                    ribo.unFocus(e);
+                });
+        }
         global_comp.push(this);
     }
     translate(x, y) {
@@ -91,7 +97,6 @@ class Ribosome {
         this.component.style('transition', amount + 's')
     }
     draw() {
-        //this.translate(map(noise(frameCount * .01 + this.rng.x), 0, 1, -1, 1), map(noise(frameCount * .01 + this.rng.y), 0, 1, -1, 1));
         this.component.attr('cx', this.pos.x + this.offset.x);
         this.component.attr('cy', this.pos.y + this.offset.y);
     }
@@ -118,5 +123,11 @@ class Ribosome {
             global_comp[i].setTransition(0)
             global_comp[i].revertColor()
         }
+    }
+    removeFromGlobalComponents() {
+        global_comp.splice(global_comp.indexOf(this), 1)
+    }
+    exit() {
+        this.component.transition().remove().duration(2000).style('opacity', 0)
     }
 }

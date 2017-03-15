@@ -1,6 +1,8 @@
 var global_comp = [];
-var fps = 30;
-var fps_focus = 10;
+var fps = 15;
+var fps_focus = 1;
+var fps_factor = 0.015;
+var transition = d3.transition()
 
 function setup() {
     //P5 Init
@@ -53,8 +55,8 @@ function resetSketch() {
     mito = new Mitochondria(svg, 60, 30, centerx - 35, centery + 160, random(360), shadeHexColor('#9e71d2', -0.3), '#9e71d2', 'mito', 'Mitochondria')
     mito_b = new Mitochondria(svg, 70, 25, centerx + 135, centery, random(360), shadeHexColor('#9e71d2', -0.3), '#9e71d2', 'mito_b', 'Mitochondria')
 
-    smooth_er = new ER(svg, 1, 8, 0.1, 3, -HALF_PI + 1, nuclear_membrane, 10, '#9e71d2', 'smooth_er', 'Smooth ER')
-
+    smooth_er = new SmoothER(svg, 1, 8, 0.1, 3, -HALF_PI + 1, nuclear_membrane, 10, '#9e71d2', 'smooth_er', 'Smooth ER')
+    rough_er = new RoughER(svg, 1, 8, 0.1, 3, HALF_PI, nuclear_membrane, 10, 2, shadeHexColor('#831973', 0.1), '#cb58bf', 'rough_er', 'Rough ER')
 }
 
 
@@ -71,4 +73,5 @@ function draw() {
     mito.draw();
     mito_b.draw();
     smooth_er.draw();
+    rough_er.draw();
 }
