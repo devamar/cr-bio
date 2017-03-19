@@ -5,13 +5,7 @@ class SmoothER {
         this.branch_width = branch_width;
         this.r = surround.width + padding;
         this.pos = createVector(surround.pos.x, surround.pos.y);
-        this.offset = createVector(0,0);
-        this.component = container.append('path')
-            .attr('fill', fill)
-            .attr('stroke', 'none')
-            .attr('d', '')
-            .attr('id', id)
-            .style('cursor', 'pointer');
+        this.offset = createVector(0, 0);
         this.start_theta = start_angle;
         this.theta_delta_a = random(this.length / 2, this.length);
         this.theta_delta_b = random(this.length / 2, this.length);
@@ -25,17 +19,8 @@ class SmoothER {
         this.id = id;
         this.fill = fill;
         this.transition = 0;
-
-        var er = this;
-
-        $('#' + id).mouseover(function(e) {
-                er.focus(e);
-            })
-            .mouseout(function(e) {
-                er.unFocus(e);
-            });
-
-        global_comp.push(this)
+        this.container = container;
+        this.component;
     }
     shadeColor(amount) {
         this.component.attr('fill', shadeHexColor(this.fill, amount))
@@ -70,16 +55,40 @@ class SmoothER {
         }
     }
     translate(x, y) {
-      this.offset.x = x;
-      this.offset.y = y;
+        this.offset.x = x;
+        this.offset.y = y;
     }
     removeFromGlobalComponents() {
-      global_comp.splice(global_comp.indexOf(this), 1)
+        global_comp.splice(global_comp.indexOf(this), 1)
     }
-    exit() {
-        this.component.transition().remove().duration(2000).style('opacity', 0)
+    exit(dur, delay) {
+        this.component.transition().remove().delay(delay).duration(dur).style('opacity', 0)
+        this.removeFromGlobalComponents()
+    }
+    setupDraw() {
+        this.component = this.container.append('path')
+            .attr('fill', this.fill)
+            .attr('stroke', 'none')
+            .attr('d', '')
+            .attr('id', this.id)
+            .style('cursor', 'pointer');
+
+
+        var er = this;
+
+        $('#' + this.id).mouseover(function(e) {
+                er.focus(e);
+            })
+            .mouseout(function(e) {
+                er.unFocus(e);
+            });
+
+        global_comp.push(this)
     }
     draw() {
+        if (!this.component) {
+            this.setupDraw()
+        }
         var current_theta = this.start_theta;
         var s = ''
         //A

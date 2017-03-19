@@ -8,16 +8,8 @@ class RoughER {
         this.branch_width = branch_width;
         this.r = surround.width + padding;
         this.pos = createVector(surround.pos.x, surround.pos.y);
-        this.offset = createVector(0,0);
-        this.component = container.append('g')
-          .attr('id', id)
+        this.offset = createVector(0, 0);
         this.ribosomes = []
-        this.er = this.component.append('path')
-            .attr('fill', fill)
-            .attr('stroke', 'none')
-            .attr('d', '')
-            .attr('id', id + '_rough')
-            .style('cursor', 'pointer');
         this.start_theta = start_angle;
         this.theta_delta_a = random(this.length / 2, this.length);
         this.theta_delta_b = random(this.length / 2, this.length);
@@ -31,17 +23,9 @@ class RoughER {
         this.id = id;
         this.fill = fill;
         this.transition = 0;
-
-        var er = this;
-
-        $('#' + id + '_rough').mouseover(function(e) {
-                er.focus(e);
-            })
-            .mouseout(function(e) {
-                er.unFocus(e);
-            });
-
-        global_comp.push(this)
+        this.container = container;
+        this.er;
+        this.component;
     }
     shadeColor(amount) {
         this.er.attr('fill', shadeHexColor(this.fill, amount))
@@ -53,7 +37,7 @@ class RoughER {
         this.er.style('transition', amount + 's');
         this.transition = amount;
         for (var i = 0; i < this.ribosomes.length; i++) {
-          this.ribosomes[i].setTransition(amount)
+            this.ribosomes[i].setTransition(amount)
         }
     }
     focus(e) {
@@ -79,23 +63,48 @@ class RoughER {
         }
     }
     translate(x, y) {
-      this.offset.x = x;
-      this.offset.y = y;
-      for (var i = 0; i < this.ribosomes.length; i++) {
-        this.ribosomes[i].translate(x, y)
-      }
+        this.offset.x = x;
+        this.offset.y = y;
+        for (var i = 0; i < this.ribosomes.length; i++) {
+            this.ribosomes[i].translate(x, y)
+        }
     }
     removeFromGlobalComponents() {
-      global_comp.splice(global_comp.indexOf(this), 1)
+        global_comp.splice(global_comp.indexOf(this), 1)
     }
-    exit() {
-        this.component.transition().remove().duration(2000).style('opacity', 0)
+    exit(dur, delay) {
+        this.component.transition().remove().delay(delay).duration(dur).style('opacity', 0)
+        this.removeFromGlobalComponents()
     }
     addRibo(x, y) {
         this.ribosomes.push(new Ribosome(this.component, this.ribo_radius + random(-this.ribo_radius_var, this.ribo_radius_var), x, y, this.ribo_fill, this.id + '_ribo', this.id + '_ribo' + this.ribosomes.length, 'Ribosome'))
     }
+    setupDraw() {
+        this.component = this.container.append('g')
+            .attr('id', this.id)
+        this.er = this.component.append('path')
+            .attr('fill', this.fill)
+            .attr('stroke', 'none')
+            .attr('d', '')
+            .attr('id', this.id + '_rough')
+            .style('cursor', 'pointer');
+
+
+        var er = this;
+
+        $('#' + this.id + '_rough').mouseover(function(e) {
+                er.focus(e);
+            })
+            .mouseout(function(e) {
+                er.unFocus(e);
+            });
+        global_comp.push(this)
+    }
     draw() {
-      //console.log(this.ribosomes)
+        if (!(this.er && this.component)) {
+            this.setupDraw();
+        }
+        //console.log(this.ribosomes)
         var current_theta = this.start_theta;
         var s = ''
         //A
@@ -208,7 +217,7 @@ class RoughER {
         this.er.attr('d', s);
 
         for (var i = 0; i < this.ribosomes.length; i++) {
-          this.ribosomes[i].draw()
+            this.ribosomes[i].draw()
         }
 
         var transx = map(noise(frameCount * fps_factor), 0, 1, -5, 5)

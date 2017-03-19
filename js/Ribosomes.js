@@ -40,6 +40,11 @@ class Ribosomes {
             this.data[j].draw();
         }
     }
+    exit() {
+      for (var j = 0; j < this.data.length; j++) {
+          this.data[j].exit();
+      }
+    }
 }
 /**
  * Creates an SVG circle with the given properties.
@@ -52,16 +57,8 @@ class Ribosomes {
  * @param {String} name - Name of the Ribosome, ie. 'Ribosomes'
  */
 class Ribosome {
-    constructor(container, r, dx, dy, fill, class_name, id, name, hover = true) {
-        this.component = container.append('circle')
-            .attr('fill', fill)
-            .attr('cx', dx)
-            .attr('cy', dy)
-            .attr('r', r)
-            .attr('class', class_name)
-            .attr('id', id)
-            .style('cursor', 'pointer')
-
+    constructor(container, r, dx, dy, fill, class_name, id, name) {
+        this.component;
         this.r = r;
         this.id = id;
         this.pos = createVector(dx, dy)
@@ -70,18 +67,7 @@ class Ribosome {
         this.fill = fill;
         this.name = name;
         this.class_name = class_name
-        this.hover = hover;
-
-        if (hover) {
-            var ribo = this;
-            $('#' + id).mouseover(function(e) {
-                    ribo.focus(e);
-                })
-                .mouseout(function(e) {
-                    ribo.unFocus(e);
-                });
-        }
-        global_comp.push(this);
+        this.container = container;
     }
     translate(x, y) {
         this.offset.x = x
@@ -96,7 +82,29 @@ class Ribosome {
     setTransition(amount) {
         this.component.style('transition', amount + 's')
     }
+    setupDraw() {
+        this.component = this.container.append('circle')
+            .attr('fill', this.fill)
+            .attr('cx', this.pos.x)
+            .attr('cy', this.pos.y)
+            .attr('r', this.r)
+            .attr('class', this.class_name)
+            .attr('id', this.id)
+            .style('cursor', 'pointer')
+
+        var ribo = this;
+        $('#' + this.id).mouseover(function(e) {
+                ribo.focus(e);
+            })
+            .mouseout(function(e) {
+                ribo.unFocus(e);
+            });
+        global_comp.push(this)
+    }
     draw() {
+        if (!this.component) {
+            this.setupDraw();
+        }
         this.component.attr('cx', this.pos.x + this.offset.x);
         this.component.attr('cy', this.pos.y + this.offset.y);
     }
@@ -127,7 +135,8 @@ class Ribosome {
     removeFromGlobalComponents() {
         global_comp.splice(global_comp.indexOf(this), 1)
     }
-    exit() {
-        this.component.transition().remove().duration(2000).style('opacity', 0)
+    exit(dur, delay) {
+        this.component.transition().remove().delay(delay).duration(dur).style('opacity', 0)
+        this.removeFromGlobalComponents()
     }
 }

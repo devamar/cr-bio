@@ -15,7 +15,7 @@
  * @param {bool} dropshadow - If true adds a dropshadow under the blob.
  */
 class Blob {
-    constructor(container, power, width, height, variance, frequency, dx, dy, noise, fill, id, name, dropshadow = false, hover = true) {
+    constructor(container, power, width, height, variance, frequency, dx, dy, noise, fill, id, name, enable_shadow = false) {
         this.power = power;
         var rng = random(variance);
         this.width = width + rng;
@@ -29,40 +29,50 @@ class Blob {
         this.container = container;
         this.fill = fill;
         this.name = name;
-        this.hover = hover;
-        if (dropshadow) {
-            this.drop_shadow = container.append('path')
-                .attr('fill', fill)
-                .attr('id', id + '_dropshadow')
-                .attr('d', draw_cell(this.width, this.height, 2 / power, frequency, noise, dx + 2, dy + 2))
-                .attr('filter', 'url(#blur)')
-                .style('cursor', 'pointer');
-        }
-
-        this.component = container.append('path')
-            .attr('fill', fill)
-            .attr('id', id)
-            .style('cursor', 'pointer');
-
-        if (hover) {
-            var blob = this;
-
-            $('#' + id).mouseover(function(e) {
-                    blob.focus(e);
-                })
-                .mouseout(function(e) {
-                    blob.unFocus(e);
-                });
-        }
-
-        global_comp.push(this)
+        this.active_draw = true;
+        this.enable_shadow = enable_shadow;
+        this.container = container;
+        this.component;
     }
     translate(x, y) {
         this.offset.x = x;
         this.offset.y = y;
+        if (this.enable_shadow && this.drop_shadow) {
+            this.drop_shadow
+                .attr('d', draw_cell(this.width, this.height, 2 / this.power, this.frequency, this.noise, this.pos.x + 2, this.pos.y + 2))
+        }
+    }
+    setupDraw() {
+        this.component = this.container.append('path')
+            .attr('fill', this.fill)
+            .attr('id', this.id)
+            .style('cursor', 'pointer');
+
+        var blob = this;
+
+        $('#' + this.id).mouseover(function(e) {
+                blob.focus(e);
+            })
+            .mouseout(function(e) {
+                blob.unFocus(e);
+            });
+        global_comp.push(this)
     }
     draw() {
-        this.component.attr('d', draw_cell(this.width, this.height, 2 / this.power, this.frequency, this.noise, this.pos.x + this.offset.x, this.pos.y + this.offset.y))
+        if (this.enable_shadow && (!this.drop_shadow)) {
+            this.drop_shadow = this.container.append('path')
+                .attr('fill', this.fill)
+                .attr('id', this.id + '_dropshadow')
+                .attr('d', draw_cell(this.width, this.height, 2 / this.power, this.frequency, this.noise, this.pos.x + 2, this.pos.y + 2))
+                .attr('filter', 'url(#blur)')
+                .style('cursor', 'pointer');
+        }
+        if (!this.component) {
+            this.setupDraw();
+        }
+        if (this.active_draw) {
+            this.component.attr('d', draw_cell(this.width, this.height, 2 / this.power, this.frequency, this.noise, this.pos.x + this.offset.x, this.pos.y + this.offset.y))
+        }
     }
     shadeColor(amount) {
         this.component.attr('fill', shadeHexColor(this.component.attr('fill'), amount))
@@ -98,7 +108,22 @@ class Blob {
     removeFromGlobalComponents() {
         global_comp.splice(global_comp.indexOf(this), 1)
     }
-    exit() {
-        this.component.transition().remove().duration(2000).style('opacity', 0)
+    exit(dur, delay) {
+        this.component.transition().remove().delay(delay).duration(dur).style('opacity', 0)
+        this.removeFromGlobalComponents()
+    }
+    getPath() {
+        if (this.component) {
+            return this.component.attr('d');
+        }
+        else {
+          return draw_cell(this.width, this.height, 2 / this.power, this.frequency, this.noise, this.pos.x + 2, this.pos.y + 2);
+        }
+    }
+    transformTo(other, sec) {
+        this.active_draw = false
+        var new_path = polymorph.transpose(this.getPath(), other.getPath())
+        this.component.transition().duration(sec).attr('d', new_path).attr('fill', other.fill);
+        this.exit(2000, sec)
     }
 }

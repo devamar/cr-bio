@@ -22,95 +22,91 @@ class Mitochondria {
         this.fill_inner = fill_inner;
         this.id = id;
         this.name = name;
+        this.container = container;
+        this.mito_group;
+        this.outer;
+        this.inner;
+        this.pillar_group;
 
         this.ytrans_offset = random(5)
+    }
+    setupDraw() {
+        //var membrane_offset = (this.width + this.height) / 16
+        this.mito_group = this.container.append('g')
+            .attr('id', this.id)
+            .attr('transform', 'rotate(' + this.rot + ' ' + (this.pos.x + this.width / 2) + ' ' + (this.pos.y + this.height / 2) + ')');
 
-        var membrane_offset = (width + height) / 16
-        this.mito_group = container.append('g')
-            .attr('id', id)
-            .attr('transform', 'rotate(' + rot + ' ' + (dx + width / 2) + ' ' + (dy + height / 2) + ')');
-
-        /*
-        this.outer_membrane = this.mito_group.append('rect')
-            .attr('fill', fill_outer_membrane)
-            .attr('x', dx - membrane_offset/2)
-            .attr('y', dy - membrane_offset/2)
-            .attr('width', width + membrane_offset)
-            .attr('height', height + membrane_offset)
-            .attr('rx', (height + membrane_offset) / 2)
-            .attr('ry', (height + membrane_offset) / 2)
-            .attr('id', id + '_outer')
-            .style('cursor', 'pointer');
-        */
         this.outer = this.mito_group.append('rect')
-            .attr('fill', fill_outer)
-            .attr('x', dx)
-            .attr('y', dy)
-            .attr('width', width)
-            .attr('height', height)
-            .attr('rx', height / 2)
-            .attr('ry', height / 2)
-            .attr('id', id + '_outer')
+            .attr('fill', this.fill_outer)
+            .attr('x', this.pos.x)
+            .attr('y', this.pos.y)
+            .attr('width', this.width)
+            .attr('height', this.height)
+            .attr('rx', this.height / 2)
+            .attr('ry', this.height / 2)
+            .attr('id', this.id + '_outer')
             .style('cursor', 'pointer');
 
-        var dv = height / 3;
+        var dv = this.height / 3;
 
         this.inner = this.mito_group.append('rect')
-            .attr('fill', fill_inner)
-            .attr('x', dx + dv / 2)
-            .attr('y', dy + dv / 2)
-            .attr('width', width - dv)
-            .attr('height', height - dv)
-            .attr('rx', (height - dv) / 2)
-            .attr('ry', (height - dv) / 2)
-            .attr('id', id + '_inner')
+            .attr('fill', this.fill_inner)
+            .attr('x', this.pos.x + dv / 2)
+            .attr('y', this.pos.y + dv / 2)
+            .attr('width', this.width - dv)
+            .attr('height', this.height - dv)
+            .attr('rx', (this.height - dv) / 2)
+            .attr('ry', (this.height - dv) / 2)
+            .attr('id', this.id + '_inner')
             .style('cursor', 'pointer');
 
-        var pillar_group = this.mito_group.append('g')
-            .attr('id', id + '_pillars')
+        this.pillar_group = this.mito_group.append('g')
+            .attr('id', this.id + '_pillars')
 
         //Lower Pillars
-        var pillar_size = width / 17.5;
-        for (var i = width / 4 - width / 8; i < width; i += width / 4) {
-            var height_pillar = random(height / 4, height / 2)
-            pillar_group.append('rect')
-                .attr('fill', fill_outer)
-                .attr('x', dx + i - pillar_size / 2)
-                .attr('y', dy + height - dv / 4 - height_pillar)
+        var pillar_size = this.width / 17.5;
+        for (var i = this.width / 4 - this.width / 8; i < this.width; i += this.width / 4) {
+            var height_pillar = random(this.height / 4, this.height / 2)
+            this.pillar_group.append('rect')
+                .attr('fill', this.fill_outer)
+                .attr('x', this.pos.x + i - pillar_size / 2)
+                .attr('y', this.pos.y + this.height - dv / 4 - height_pillar)
                 .attr('width', pillar_size)
                 .attr('height', height_pillar)
                 .attr('rx', pillar_size / 2)
                 .attr('ry', pillar_size / 2)
-                .attr('class', id + '_pillar')
+                .attr('class', this.id + '_pillar')
                 .style('cursor', 'pointer');
         }
 
         //Upper Pillars
-        for (var i = width / 4; i < width; i += width / 4) {
-            var height_pillar = random(height / 4, height / 2)
-            pillar_group.append('rect')
-                .attr('fill', fill_outer)
-                .attr('x', dx + i - pillar_size / 2)
-                .attr('y', dy + dv / 4)
+        for (var i = this.width / 4; i < this.width; i += this.width / 4) {
+            var height_pillar = random(this.height / 4, this.height / 2)
+            this.pillar_group.append('rect')
+                .attr('fill', this.fill_outer)
+                .attr('x', this.pos.x + i - pillar_size / 2)
+                .attr('y', this.pos.y + dv / 4)
                 .attr('width', pillar_size)
                 .attr('height', height_pillar)
                 .attr('rx', pillar_size / 2)
                 .attr('ry', pillar_size / 2)
-                .attr('class', id + '_pillar')
+                .attr('class', this.id + '_pillar')
                 .style('cursor', 'pointer');
         }
 
         var mito = this;
-        $('#' + id).mouseover(function(e) {
+        $('#' + this.id).mouseover(function(e) {
                 mito.focus(e);
             })
             .mouseout(function(e) {
                 mito.unFocus(e);
             });
-
         global_comp.push(this)
     }
     draw() {
+        if (!(this.mito_group && this.outer && this.inner && this.pillar_group)) {
+            this.setupDraw();
+        }
         this.mito_group.attr('transform', 'translate(' + this.offset.x + ', ' + this.offset.y + ') rotate(' + (this.rot + map(noise(frameCount * fps_factor * 0.1), 0, 1, 0, 360)) + ' ' + (this.pos.x + this.width / 2) + ' ' + (this.pos.y + this.height / 2) + ')')
         var xtrans = map(noise(frameCount * fps_factor), 0, 1, -8, 8)
         var ytrans = map(noise(frameCount * fps_factor + this.ytrans_offset), 0, 1, -8, 8)
@@ -160,7 +156,8 @@ class Mitochondria {
     removeFromGlobalComponents() {
         global_comp.splice(global_comp.indexOf(this), 1)
     }
-    exit() {
-        this.mito_group.transition().remove().duration(2000).style('opacity', 0)
+    exit(dur, delay) {
+        this.mito_group.transition().remove().delay(delay).duration(dur).style('opacity', 0)
+        this.removeFromGlobalComponents()
     }
 }
